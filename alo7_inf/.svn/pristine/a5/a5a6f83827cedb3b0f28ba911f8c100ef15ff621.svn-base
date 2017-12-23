@@ -1,0 +1,83 @@
+package cn.com.alo7.inf.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import cn.com.alo7.inf.common.Constant;
+import cn.com.alo7.inf.common.utils.JsonUtils;
+import cn.com.alo7.inf.common.utils.PageUtils;
+import cn.com.alo7.inf.entity.Column;
+import cn.com.alo7.inf.service.IColumnService;
+import cn.com.alo7.inf.vo.DataVo;
+import cn.com.alo7.inf.vo.RootVo;
+
+@RestController
+public class ColumnController {
+
+	@Autowired
+	private IColumnService columnService;
+
+	/**
+	 * A01-栏目清单
+	 * 
+	 * @param videoId
+	 * @return
+	 * @throws Exception
+	 */
+	@GetMapping("columns")
+	@ResponseBody
+	public RootVo getColumnList() {
+		List<Column> columnList = columnService.findAll();
+		RootVo rootVo = JsonUtils.createRoot();
+		List<DataVo<Column>> dataList = new ArrayList<DataVo<Column>>();
+		DataVo<Column> dataVo = null;
+		for (Column column : columnList) {
+			dataVo = (DataVo<Column>) JsonUtils.setData(column.getId(), "column", column);
+			dataList.add(dataVo);
+		}
+		rootVo.setData(dataList);
+		return rootVo;
+	}
+
+	/**
+	 * A02-查询栏目视频
+	 * 
+	 * @param videoId
+	 * @return
+	 * @throws Exception
+	 */
+	@GetMapping("columns/{columnId}/videos")
+	@ResponseBody
+	public Page<Column> getColumnVideoList(@PathVariable Long columnId, 
+			@RequestParam(value = "sort", required = false) String sort,
+			@RequestParam(value = "page", required = false) Integer page,
+			@RequestParam(value = "size", required = false) Integer size) {
+		Pageable pageable = PageUtils.page(page, size);
+		
+		Page<Column> columnList= columnService.findById(columnId, pageable);
+		
+		if(null == sort || "".equals(sort)){
+			sort = Constant.SORT_MANUAL;
+		}
+		
+		if(Constant.SORT_MANUAL.equals(sort)){
+			
+		}else if(Constant.SORT_RELEASEDTIME.equals(sort)){
+			
+		}else if(Constant.SORT_HOT.equals(sort)){
+			
+		}
+		
+		return columnList;
+	}
+}

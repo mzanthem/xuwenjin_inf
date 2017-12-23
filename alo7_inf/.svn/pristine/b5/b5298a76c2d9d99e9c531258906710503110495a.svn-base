@@ -1,0 +1,15 @@
+package cn.com.broadtext.rest.dao;
+
+import javax.transaction.Transactional;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Service;
+
+import cn.com.broadtext.rest.entity.Column;
+
+@Service
+@Transactional
+public interface ColumnRepository extends CrudRepository<Column, Long> {
+	
+
+}

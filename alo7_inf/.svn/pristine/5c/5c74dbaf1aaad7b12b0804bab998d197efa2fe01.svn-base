@@ -1,0 +1,18 @@
+package cn.com.alo7.inf.service;
+
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import cn.com.alo7.inf.entity.Column;
+
+public interface IColumnService {
+	/**
+	 * 全查询
+	 * @return
+	 */
+	List<Column> findAll();
+	
+	Page<Column> findById(Long id,Pageable pageable);
+}

@@ -1,0 +1,70 @@
+package cn.com.broadtext.rest.controller;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.jasminb.jsonapi.JSONAPIDocument;
+import com.github.jasminb.jsonapi.ResourceConverter;
+import com.github.jasminb.jsonapi.SerializationFeature;
+import com.github.jasminb.jsonapi.exceptions.DocumentSerializationException;
+
+import cn.com.broadtext.rest.dao.ColumnRepository;
+import cn.com.broadtext.rest.entity.Column;
+import cn.com.broadtext.rest.entity.JsonModel;
+
+@RestController
+public class ColumnController {
+	
+	@Resource
+	ColumnRepository dao;
+	
+	private ResourceConverter converter;
+	
+	@SuppressWarnings("deprecation")
+	@RequestMapping(value = "/column", method = RequestMethod.GET)
+	@ResponseBody
+	public String queryColumn() throws DocumentSerializationException, JsonProcessingException, IllegalAccessException {
+		List<Column> list = new ArrayList<Column>();
+		list = (List<Column>) this.dao.findAll();
+		
+		converter = new ResourceConverter(Column.class);
+		converter.enableSerializationOption(SerializationFeature.INCLUDE_RELATIONSHIP_ATTRIBUTES);
+		
+		byte [] rawData = converter.writeObjectCollection(list);
+		JSONAPIDocument<List<Column>> docs = converter.readDocumentCollection(rawData, Column.class);
+		String jsonStr = new String(converter.writeDocumentCollection(docs));
+		return jsonStr;
+	}
+	
+	@GetMapping("/login/{userId}")
+	@ResponseBody
+	public String login(@PathVariable String userId) {
+		
+		JsonModel jModel = new JsonModel();
+		jModel.setId(0);
+		jModel.setType("map");
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9");
+		
+		jModel.setAttributes(result);
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("data", jModel);
+		String jsonstr = "";
+		System.out.println(jsonstr);
+		return jsonstr;
+	}
+}

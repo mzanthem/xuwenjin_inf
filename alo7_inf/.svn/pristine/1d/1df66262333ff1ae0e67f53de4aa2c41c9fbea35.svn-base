@@ -1,0 +1,93 @@
+package cn.com.alo7.inf.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
+import cn.com.alo7.inf.common.Constant;
+import cn.com.alo7.inf.common.utils.PageUtils;
+import cn.com.alo7.inf.entity.ColumnVideoRef;
+import cn.com.alo7.inf.entity.Video;
+import cn.com.alo7.inf.repository.VideoRepository;
+import cn.com.alo7.inf.service.IVideoService;
+
+@Service
+public class VideoServiceImpl implements IVideoService{
+
+	@Autowired
+	private VideoRepository videoRepository;
+
+	@Override
+	public Video findById(Long id) {
+		return videoRepository.findById(id);
+	}
+
+	@Override
+	public Page<Video> findByColumnVideoRefColumnIdAndStatus(Long columnId,String status,Pageable pageable) {
+		return videoRepository.findByColumnVideoRefColumnIdAndStatus(columnId,status,pageable);
+	}
+
+	@Override
+	public Page<Video> findByColumnVideoCritera(Long columnId,Integer page, Integer size, String sort) {
+		Page<Video> pageList = null;
+		Pageable pageable = null;
+		//默认 手工 排序 
+		if(null == sort || "".equals(sort)){
+			sort = Constant.SORT_MANUAL;
+		}
+		pageable = PageUtils.page(page, size,new Sort(Direction.DESC,"columnVideoRef.position"));
+		Page<Video> videoList = videoRepository.findAll(new Specification<Video>(){
+
+			@Override
+			public Predicate toPredicate(Root<Video> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				List<Predicate> predicates = new ArrayList<Predicate>(); 
+				predicates.add(cb.equal(root.<String>get("deleteFlag"),Constant.DELETE_FLAG_0));
+				Join<Video, ColumnVideoRef> abMap = root.join("columnVideoRef",JoinType.LEFT);
+				//Join<Video, ColumnVideoRef> abMap = root.join("columnVideoRef");
+				predicates.add(cb.equal(abMap.get("column").get("id"),columnId));
+				predicates.add(cb.equal(abMap.get("column").get("deleteFlag"),Constant.DELETE_FLAG_0));
+				predicates.add(cb.equal(abMap.get("deleteFlag"),Constant.DELETE_FLAG_0));
+				predicates.add(cb.equal(root.<String>get("status"),Constant.STATUS_UP));
+				return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
+			}
+			
+		},pageable);
+		
+		
+		
+		
+	/*	if(Constant.SORT_MANUAL.equals(sort)){
+			pageable = PageUtils.page(page, size,new Sort(Direction.DESC,"columnVideoRef.position"));
+			
+			
+			
+			
+			pageList = videoService.findByColumnVideoRefColumnIdAndStatus(columnId,Constant.STATUS_UP,pageable);
+		}else if(Constant.SORT_RELEASEDTIME.equals(sort)){
+			pageable = PageUtils.page(page, size,new Sort(Direction.DESC,"updatedAt"));
+			pageList = videoService.findByColumnVideoRefColumnIdAndStatus(columnId,Constant.STATUS_UP,pageable);
+		}else if(Constant.SORT_HOT.equals(sort)){
+			pageable = PageUtils.page(page, size,new Sort(Direction.DESC,"updatedAt"));
+
+		}	*/	
+		
+		
+		return videoList;
+	}
+
+	
+}

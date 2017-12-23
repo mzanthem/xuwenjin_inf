@@ -1,0 +1,13 @@
+package cn.com.alo7.inf.service;
+
+import cn.com.alo7.inf.entity.Video;
+
+public interface IVideoService {
+	
+	/**
+	 * 通过id相等查询
+	 * @param id
+	 * @return
+	 */
+	Video findByIdAndDeleteFlag(Long id,String deleteFlag);
+}

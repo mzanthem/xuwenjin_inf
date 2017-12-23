@@ -1,0 +1,25 @@
+package cn.com.alo7.inf.service;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import cn.com.alo7.inf.entity.Video;
+
+public interface IVideoService {
+	/**
+	 * 通过id相等查询
+	 * @param id
+	 * @return
+	 */
+	Video findById(Long id);
+	
+	/**
+	 * 单个栏目下视频
+	 * @param columnId
+	 * @param pageable
+	 * @return
+	 */
+	Page<Video> findByColumnVideoRefColumnIdAndStatus(Long columnId,String status,Pageable pageable);
+
+	Page<Video> findByColumnVideoCritera(Long columnId,Integer page, Integer size,String sort);
+}

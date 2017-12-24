@@ -24,7 +24,7 @@ import cn.com.alo7.inf.vo.RootVo;
 import cn.com.alo7.inf.vo.VideoVo;
 
 @RestController
-public class ColumnController {
+public class ColumnController extends BaseController {
 
 	@Autowired
 	private IColumnService columnService;

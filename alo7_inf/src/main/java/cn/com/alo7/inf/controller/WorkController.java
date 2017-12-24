@@ -16,7 +16,7 @@ import cn.com.alo7.inf.service.IWorkService;
 import cn.com.alo7.inf.vo.RootVo;
 
 @RestController
-public class WorkController {
+public class WorkController extends BaseController {
 	
 	@Autowired
 	private IWorkService workService;

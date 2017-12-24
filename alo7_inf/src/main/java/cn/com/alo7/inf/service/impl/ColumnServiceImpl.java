@@ -10,12 +10,18 @@ import cn.com.alo7.inf.entity.Column;
 import cn.com.alo7.inf.repository.ColumnRepository;
 import cn.com.alo7.inf.service.IColumnService;
 
+/**
+ * 栏目
+ * 
+ * @author mazan
+ *
+ */
 @Service
-public class ColumnServiceImpl implements IColumnService{
+public class ColumnServiceImpl implements IColumnService {
 
 	@Autowired
 	private ColumnRepository columnRepository;
-	
+
 	@Override
 	public List<Column> findAll() {
 		List<Column> columnList = columnRepository.findByDeleteFlag(Constant.DELETE_FLAG_0);

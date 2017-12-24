@@ -11,22 +11,48 @@ import javax.persistence.Table;
 
 import cn.com.alo7.inf.entity.base.BaseEntity;
 
+/**
+ * 栏目表
+ * @author mazan
+ *
+ */
 @Entity
 @Table(name = "sys_column")
 public class Column extends BaseEntity{
 	/**
-	 * 
+	 * UID
 	 */
 	private static final long serialVersionUID = -1944257133801444332L;
+	/**
+	 * id
+	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	/**
+	 * 栏目名称						
+	 */
 	private String name;
+	/**
+	 * 图片路径
+	 */
 	private String picUrl;
+	/**
+	 * 栏目描述						
+	 */
 	private String description;
+	/**
+	 * 是否上架
+	 * IS_NOT	是：yes；否：no											
+	 */
 	private String status;
+	/**
+	 * 排序						
+	 */
 	private Long position;
-	
+	/**
+	 * 栏目下的视频
+	 */
 	@OneToMany(mappedBy="column")
 	private List<ColumnVideoRef> columnVideoRef;
 

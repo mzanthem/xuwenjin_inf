@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,7 +24,7 @@ import cn.com.alo7.inf.vo.RootVo;
 import cn.com.alo7.inf.vo.VideoVo;
 
 @RestController
-public class ColumnController {
+public class ColumnController extends BaseController {
 
 	@Autowired
 	private IColumnService columnService;
@@ -42,7 +41,6 @@ public class ColumnController {
 	 * @throws Exception
 	 */
 	@GetMapping("columns")
-	@ResponseBody
 	public RootVo getColumnList() throws JsonProcessingException {
 		//查询栏目(deleteFlag为0)
 		List<Column> columnList = columnService.findAll();
@@ -71,7 +69,6 @@ public class ColumnController {
 	 * @return
 	 */
 	@GetMapping("columns/{columnId}/videos")
-	@ResponseBody
 	public RootVo getColumnVideoList(@PathVariable Long columnId,
 			@RequestParam(value = "sort", required = false) String sort,
 			@RequestParam(value = "page", required = false) Integer page,

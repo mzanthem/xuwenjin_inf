@@ -8,24 +8,59 @@ import javax.persistence.Table;
 
 import cn.com.alo7.inf.entity.base.BaseEntity;
 
+/**
+ * 专辑视图
+ * @author mazan
+ *
+ */
 @Entity
 @Table(name = "v_a09_album")
 public class AlbumView extends BaseEntity{
 	/**
-	 * 
+	 * UID
 	 */
 	private static final long serialVersionUID = -1944257133801444332L;
+	/**
+	 * id
+	 */
 	@Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Long id;
+	/**
+	 * 专辑名称						
+	 */
 	private String name;
+	/**
+	 * 专辑类型		
+	 * ALBUM_TYPE	1:视频；2:用户作品											
+	 */
 	private String type;
+	/**
+	 * 特殊专辑类型						
+	 * SPECIAL_ALBUM_TYPE:    1:一般专辑；2:特殊专辑											
+	 */
 	private String specialType;
+	/**
+	 * 特殊专辑编码						
+	 */
 	private String specialTypeCode;
+	/**
+	 * 特殊专辑名称						
+	 */
 	private String specialTypeName;
+	/**
+	 * 特殊专辑说明						
+	 */
 	private String specialTypeDescription;
+	/**
+	 * 背景图片路径						
+	 */
 	private String backgroundImgUrl;
+	/**
+	 * 专辑描述						
+	 */
 	private String description;
+	
 	private String status;
 	private Integer position;
 	public Long getId() {

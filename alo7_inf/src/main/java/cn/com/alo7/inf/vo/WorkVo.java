@@ -1,7 +1,5 @@
 package cn.com.alo7.inf.vo;
 
-import javax.persistence.Transient;
-
 import cn.com.alo7.inf.entity.base.BaseEntity;
 
 public class WorkVo extends BaseEntity{

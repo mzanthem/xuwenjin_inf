@@ -7,6 +7,11 @@ import org.springframework.stereotype.Repository;
 
 import cn.com.alo7.inf.entity.Column;
 
+/**
+ * 栏目dao
+ * @author mazan
+ *
+ */
 @Repository
 public interface ColumnRepository extends JpaRepository<Column, Long> {
 	/**

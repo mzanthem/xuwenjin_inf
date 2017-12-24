@@ -4,14 +4,20 @@ import org.springframework.data.domain.Page;
 
 import cn.com.alo7.inf.entity.AlbumView;
 
+/**
+ * 专辑视图service
+ * 
+ * @author mazan
+ *
+ */
 public interface IAlbumViewService {
-	
+
 	/**
-	 * 一般视频专辑清单
-	 * 特殊视频专辑清单
+	 * 一般视频专辑清单 特殊视频专辑清单
+	 * 
 	 * @param albumSize
 	 * @param type
 	 * @return
 	 */
-	Page<AlbumView> findByAlbumSizeAndType(Integer albumSize,String type);
+	Page<AlbumView> findByAlbumSizeAndType(Integer albumSize, String type);
 }

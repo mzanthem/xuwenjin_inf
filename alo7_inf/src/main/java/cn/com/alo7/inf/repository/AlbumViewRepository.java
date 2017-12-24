@@ -5,6 +5,11 @@ import org.springframework.stereotype.Repository;
 
 import cn.com.alo7.inf.entity.AlbumView;
 
+/**
+ * 栏目视图dao
+ * @author mazan
+ *
+ */
 @Repository
 public interface AlbumViewRepository extends JpaRepository<AlbumView, Long>{
 }

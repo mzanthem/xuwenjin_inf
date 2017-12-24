@@ -8,16 +8,27 @@ import javax.persistence.Table;
 
 import cn.com.alo7.inf.entity.base.BaseEntity;
 
+/**
+ * 栏目视频视图
+ * @author mazan
+ *
+ */
 @Entity
 @Table(name = "v_a02_column_video")
 public class ColumnVideoView extends BaseEntity{
 	/**
-	 * 
+	 * UID
 	 */
 	private static final long serialVersionUID = -1944257133801444332L;
+	/**
+	 * id
+	 */
 	@Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Long id;
+	/**
+	 * 视频名称
+	 */
 	private String name;
 	private String title;
 	private String videoUrl;
@@ -33,7 +44,14 @@ public class ColumnVideoView extends BaseEntity{
 	private String status;
 	private String isDisplay;
 	private Long position;
+	/**
+	 * 排序字段
+	 * manual,releasedTime,hot
+	 */
 	private String sort;
+	/**
+	 * sys_column_video_ref.column_id
+	 */
 	private Long columnId;
 	public Long getId() {
 		return id;

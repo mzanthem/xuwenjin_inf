@@ -12,31 +12,88 @@ import javax.persistence.Transient;
 
 import cn.com.alo7.inf.entity.base.BaseEntity;
 
+/**
+ * 视频实体
+ * @author mazan
+ *
+ */
 @Entity
 @Table(name = "sys_video")
 public class Video extends BaseEntity{
 	/**
-	 * 
+	 * UID
 	 */
 	private static final long serialVersionUID = -1944257133801444332L;
-	
+	/**
+	 * id
+	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	/**
+	 * 视频名称
+	 */
 	private String name;
+	/**
+	 * 标题						
+	 */
 	private String title;
+	/**
+	 * 视频路径						
+	 */
 	private String videoUrl;
+	/**
+	 * 语音音轨路径
+	 */
 	private String voiceTrackUrl;
+	/**
+	 * 背景音轨路径
+	 */
 	private String backgroundTrackUrl;
+	/**
+	 * 字幕路径
+	 */
 	private String subtitleUrl;
+	/**
+	 * 封面路径
+	 */
 	private String coverUrl;
+	/**
+	 * 难度	 
+	 * DIFFICULTY 1：入门;2.普通;3.一般;4.困难;5.挑战		
+	 */
 	private String difficulty;
+	/**
+	 * 语速
+	 * 1.慢速;2.较慢;3.正常;4.较快;5.快速											
+	 */
 	private String speed;
+	/**
+	 * 简述
+	 */
 	private String description;
+	/**
+	 * 来源
+	 */
 	private String source;
+	/**
+	 * 是否通过
+	 * IS_NOT	是：yes；否：no													
+	 */
 	private String isPassed;
+	/**
+	 * 是否上架	
+	 * IS_NOT	是：yes；否：no											
+	 */
 	private String status;
+	/**
+	 * 字幕是否前端显示	
+	 * IS_NOT	是：yes；否：no												
+	 */
 	private String isDisplay;
+	/**
+	 * 排序						
+	 */
 	private Long position;
 	
 	@OneToMany(mappedBy="video")

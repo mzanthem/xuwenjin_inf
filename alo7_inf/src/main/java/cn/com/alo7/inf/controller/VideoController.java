@@ -12,15 +12,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import cn.com.alo7.inf.common.Constant;
 import cn.com.alo7.inf.common.utils.JsonUtils;
 import cn.com.alo7.inf.entity.Video;
 import cn.com.alo7.inf.entity.Work;
 import cn.com.alo7.inf.service.IVideoService;
+import cn.com.alo7.inf.service.IWorkService;
 import cn.com.alo7.inf.vo.DataVo;
 import cn.com.alo7.inf.vo.RelationshipDataVo;
 import cn.com.alo7.inf.vo.RelationshipVo;
@@ -29,11 +28,23 @@ import cn.com.alo7.inf.vo.UserVo;
 import cn.com.alo7.inf.vo.VideoVo;
 import cn.com.alo7.inf.vo.WorkVo;
 
+/**
+ * 视频controller
+ * @author mazan
+ * 使用@RestController注解后，无需再用@ResponseBody
+ */
 @RestController
 public class VideoController {
-	
+	/**
+	 * 视频service
+	 */
 	@Autowired
 	private IVideoService videoService;
+	/**
+	 * 作品service
+	 */
+	@Autowired
+	private IWorkService workService;
 	
 	/**
 	 * A03-查询单个视频信息
@@ -41,7 +52,6 @@ public class VideoController {
 	 * @return
 	 */
 	@GetMapping("videos/{videoId}")
-	@ResponseBody
 	public RootVo getVideoInfo(@PathVariable Long videoId){
 		//初始化
 		VideoVo videoVo = null;
@@ -67,10 +77,9 @@ public class VideoController {
 	 * @return
 	 */
 	@GetMapping("videos/{videoId}/works")
-	@ResponseBody
 	public RootVo getVideoCorresWork(@PathVariable Long videoId,
-			@RequestParam(value = "size", required = false) Integer size){
-		List<Work> workList = videoService.findWorkByVideoId(videoId, size);
+			@RequestParam(value = "size", required = false, defaultValue="20") Integer size){
+		List<Work> workList = workService.findWorkByVideoId(videoId, size);
 		//转换json
 		RootVo rootVo = JsonUtils.createRoot();
 		
@@ -125,7 +134,6 @@ public class VideoController {
 	 * @throws Exception 
 	 */
 	@PostMapping("videos/{videoId}/dub")
-	@ResponseBody
 	public String saveUserWork(@PathVariable String videoId,@RequestBody Video video){
 		
 		return "";

@@ -6,6 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import cn.com.alo7.inf.entity.Video;
 
+/**
+ * 视频dao
+ * @author mazan
+ *
+ */
 @Repository
 public interface VideoRepository extends JpaRepository<Video, Long>,JpaSpecificationExecutor<Video> {
 	

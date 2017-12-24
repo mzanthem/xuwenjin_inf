@@ -8,6 +8,11 @@ import org.springframework.stereotype.Repository;
 
 import cn.com.alo7.inf.entity.Work;
 
+/**
+ * 作品dao
+ * @author mazan
+ *
+ */
 @Repository
 public interface WorkRepository extends JpaRepository<Work, Long>{
 	

@@ -12,23 +12,29 @@ import cn.com.alo7.inf.entity.AlbumView;
 import cn.com.alo7.inf.repository.AlbumViewRepository;
 import cn.com.alo7.inf.service.IAlbumViewService;
 
+/**
+ * 专辑
+ * 
+ * @author mazan
+ *
+ */
 @Service
-public class AlbumViewServiceImpl implements IAlbumViewService{
+public class AlbumViewServiceImpl implements IAlbumViewService {
 
 	@Autowired
 	private AlbumViewRepository albumViewRepository;
 
 	@Override
-	public Page<AlbumView> findByAlbumSizeAndType(Integer albumSize,String type){
-		Pageable pageable = PageUtils.page(null, albumSize,null);
-		
-		//创建查询条件数据对象
+	public Page<AlbumView> findByAlbumSizeAndType(Integer albumSize, String type) {
+		Pageable pageable = PageUtils.page(null, albumSize, null);
+
+		// 创建查询条件数据对象
 		AlbumView albumView = new AlbumView();
 		albumView.setType(type);
-		
-		//创建匹配器
+
+		// 创建匹配器
 		ExampleMatcher matcher = ExampleMatcher.matching();
-		Example<AlbumView> ex = Example.of(albumView,matcher);
-		return albumViewRepository.findAll(ex,pageable);
+		Example<AlbumView> ex = Example.of(albumView, matcher);
+		return albumViewRepository.findAll(ex, pageable);
 	}
 }

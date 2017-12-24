@@ -34,7 +34,7 @@ import cn.com.alo7.inf.vo.WorkVo;
  * 使用@RestController注解后，无需再用@ResponseBody
  */
 @RestController
-public class VideoController {
+public class VideoController extends BaseController {
 	/**
 	 * 视频service
 	 */

@@ -6,6 +6,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,18 +51,19 @@ public class AlbumController extends BaseController {
 
 	/**
 	 * A10-查询一般作品专辑清单
-	 * 
+	 * albums/works?type=commonly&albumlimit=albumlimit&videolimit=videolimit&sortType=sortType
 	 * @param albumSize
 	 * @param videoSize
 	 * @param sort
 	 * @return
 	 * @author mazan
 	 */
-	@GetMapping(value = "albums/works")
+//	@GetMapping(value = "albums/works")
+	@RequestMapping(value = "albums/works", params = "type=commonly", method = RequestMethod.GET)
 	public String getCommonlyAlbumWorkList(
-			@RequestParam(value = "albumSize", required = false, defaultValue = ALBUM_SIZE) Integer albumSize,
-			@RequestParam(value = "videoSize", required = false, defaultValue = VIDEO_SIZE) Integer videoSize,
-			@RequestParam(value = "sort", required = false, defaultValue = SORT) String sort) {
+			@RequestParam(value = "albumlimit", required = false, defaultValue = ALBUM_SIZE) Integer albumSize,
+			@RequestParam(value = "videolimit", required = false, defaultValue = VIDEO_SIZE) Integer videoSize,
+			@RequestParam(value = "sortType", required = false, defaultValue = SORT) String sort) {
 		// TODO
 		Map<String, Object> map = new HashMap<>();
 		map.put("arg1", new Long(1000));

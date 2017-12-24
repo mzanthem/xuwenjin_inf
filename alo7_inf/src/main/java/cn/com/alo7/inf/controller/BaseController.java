@@ -12,4 +12,7 @@ public class BaseController {
 	protected static final String ALBUM_SIZE = "4";
 	protected static final String VIDEO_SIZE = "4";
 	
+	protected static final String START = "1";
+	protected static final String END = "99999999";
+	
 }

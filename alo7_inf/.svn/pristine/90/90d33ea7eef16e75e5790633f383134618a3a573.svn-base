@@ -1,9 +1,0 @@
-package cn.com.alo7.inf.service;
-
-import org.springframework.data.domain.Page;
-
-import cn.com.alo7.inf.entity.VColumnVideo;
-
-public interface IVColumnVideoService {
-	Page<VColumnVideo> findAll(Long columnId,Integer page, Integer size, String sort);
-}

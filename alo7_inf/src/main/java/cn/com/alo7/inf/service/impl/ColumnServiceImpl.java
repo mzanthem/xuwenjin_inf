@@ -21,7 +21,7 @@ public class ColumnServiceImpl implements IColumnService {
 
 	@Autowired
 	private ColumnRepository columnRepository;
-
+	
 	@Override
 	public List<Column> findAll() {
 		List<Column> columnList = columnRepository.findByDeleteFlag(Constant.DELETE_FLAG_0);

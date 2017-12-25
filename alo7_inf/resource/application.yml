@@ -24,3 +24,13 @@ spring:
     hibernate:
       ddl-auto: update
       naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+  redis:
+    host: localhost
+    port: 6379
+    password: 123qazxsw!@#
+    pool:  
+      max-active: 8  
+      max-idle: 8  
+      min-idle: 0  
+      max-wait: -1
+    timeout: 0  

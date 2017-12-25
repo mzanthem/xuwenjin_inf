@@ -1,8 +1,11 @@
 package cn.com.alo7.inf.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +20,12 @@ import cn.com.alo7.inf.entity.AlbumView;
 import cn.com.alo7.inf.entity.VideoView;
 import cn.com.alo7.inf.service.IAlbumViewService;
 import cn.com.alo7.inf.service.IVideoViewService;
+import cn.com.alo7.inf.vo.AlbumVo;
+import cn.com.alo7.inf.vo.DataVo;
+import cn.com.alo7.inf.vo.RelationshipDataVo;
+import cn.com.alo7.inf.vo.RelationshipVo;
+import cn.com.alo7.inf.vo.RootVo;
+import cn.com.alo7.inf.vo.VideoVo;
 
 @RestController
 public class AlbumController extends BaseController {
@@ -28,25 +37,61 @@ public class AlbumController extends BaseController {
 	private IVideoViewService videoViewService;
 
 	/**
-	 * A09-查询一般视频专辑清单 type=commonly A12-查询特殊专辑视频清单type=special
-	 * 
+	 * A09-查询一般视频专辑清单 type=commonly
+	 * A12-查询特殊专辑视频清单type=special
 	 * @param albumSize
 	 * @param videoSize
 	 * @param sort
 	 * @return
 	 */
 	@GetMapping("albums/videos")
-	public String getCommonlyAlbumVideoList(@RequestParam(value = "type", required = false) String type,
-			@RequestParam(value = "albumSize", required = false) Integer albumSize,
-			@RequestParam(value = "videoSize", required = false) Integer videoSize,
-			@RequestParam(value = "sort", required = false) String sort) {
+	@ResponseBody
+	public RootVo getCommonlyAlbumVideoList(@RequestParam(value="type", required=false) String type,
+			@RequestParam(value="albumSize", required=false) Integer albumSize,
+			@RequestParam(value="videoSize", required=false) Integer videoSize,
+			@RequestParam(value="sort", required=false) String sort){
 		Page<AlbumView> pageAlbumViewList = albumViewService.findByAlbumSizeAndType(albumSize, type);
 		Page<VideoView> pageVideoViewList = null;
-		for (AlbumView albumView : pageAlbumViewList) {
-			pageVideoViewList = videoViewService.findByAlbumIdAndVideoSizeAndSort(albumView.getId(), videoSize, sort);
-		}
+		
+		//转json
+		//构建Data
+		AlbumVo albumVo = null;
+		VideoVo videoVo = null;
+		DataVo<AlbumVo> dataVo = null;
+		DataVo<VideoVo> included = null;
+		List<DataVo<AlbumVo>> dataVoList = new ArrayList<DataVo<AlbumVo>>();
+		List<DataVo<VideoVo>> includedList = new ArrayList<DataVo<VideoVo>>();
 
-		return "";
+		Map<String,Object> relationships = null;
+		RelationshipVo<RelationshipDataVo> relationshipVo = null;
+		RelationshipDataVo relationshipDataVo = null;
+		
+		RootVo rootVo = JsonUtils.createRoot();
+		for (AlbumView albumView : pageAlbumViewList) {
+			albumVo = new AlbumVo();
+			BeanUtils.copyProperties(albumView, albumVo);
+			dataVo = (DataVo<AlbumVo>) JsonUtils.setData(albumView.getId(), "album", albumVo);
+			pageVideoViewList = videoViewService.findByAlbumIdAndVideoSizeAndSort(albumView.getId(), videoSize, sort);
+			for (VideoView videoView : pageVideoViewList) {
+				//构建relationships
+				relationships = new HashMap<String,Object>();
+				relationshipDataVo = new RelationshipDataVo(videoView.getId(),"video");
+				relationshipVo = new RelationshipVo<RelationshipDataVo>();
+				relationshipVo.setData(relationshipDataVo);
+				relationships.put("video", relationshipVo);
+				dataVo.setRelationships(relationships);
+				dataVoList.add(dataVo);
+				//构建included
+				videoVo = new VideoVo();
+				BeanUtils.copyProperties(videoView, videoVo);
+				included = (DataVo<VideoVo>) JsonUtils.setData(videoView.getId(),"video", videoVo);
+				includedList.add(included);
+			}
+		}
+		rootVo.setData(dataVoList);
+		rootVo.setIncluded(includedList);
+		
+		return rootVo;
 	}
 
 	/**

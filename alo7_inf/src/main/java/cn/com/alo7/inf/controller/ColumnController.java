@@ -57,6 +57,7 @@ public class ColumnController extends BaseController {
 			dataList.add(dataVo);
 		}
 		rootVo.setData(dataList);
+		
 		return rootVo;
 	}
 

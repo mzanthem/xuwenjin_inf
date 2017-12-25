@@ -37,4 +37,10 @@ public class AlbumViewServiceImpl implements IAlbumViewService {
 		Example<AlbumView> ex = Example.of(albumView, matcher);
 		return albumViewRepository.findAll(ex, pageable);
 	}
+
+	@Override
+	public AlbumView findAlbumById(Integer id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

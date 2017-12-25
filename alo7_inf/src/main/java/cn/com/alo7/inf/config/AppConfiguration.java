@@ -45,7 +45,7 @@ public class AppConfiguration {
 		return new ApiInfoBuilder()
 				.title("ALO REST API")
 				.description("爱乐奇REST API")
-				.termsOfServiceUrl("http://localhost:8080/swagger-ui.html")
+				.termsOfServiceUrl("")
 //				.contact(new Contact("zan.ma", "", "mazanxzyz@163.com"))
 				.version("1.0")
 				.build();

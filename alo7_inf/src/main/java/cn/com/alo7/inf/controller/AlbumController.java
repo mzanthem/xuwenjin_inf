@@ -8,6 +8,9 @@ import java.util.Map;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,17 +20,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cn.com.alo7.inf.common.utils.JsonUtils;
 import cn.com.alo7.inf.entity.AlbumView;
+import cn.com.alo7.inf.entity.VideoFullView;
 import cn.com.alo7.inf.entity.VideoView;
 import cn.com.alo7.inf.service.IAlbumViewService;
 import cn.com.alo7.inf.service.IVideoViewService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
 import cn.com.alo7.inf.vo.AlbumVo;
 import cn.com.alo7.inf.vo.DataVo;
 import cn.com.alo7.inf.vo.RelationshipDataVo;
 import cn.com.alo7.inf.vo.RelationshipVo;
 import cn.com.alo7.inf.vo.RootVo;
 import cn.com.alo7.inf.vo.VideoVo;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * swagger2 对于同样命名的url有个bug,只能发现一个
@@ -130,9 +134,9 @@ public class AlbumController extends BaseController {
 	@ApiImplicitParam(name = "type", value = "作品类型", required = true, paramType = "String", allowableValues = "commonly")
 	@RequestMapping(value = "albums/works", params = "type=commonly", method = RequestMethod.GET)
 	public String getCommonlyAlbumWorkList(
-			@RequestParam(value = "albumlimit", required = false, defaultValue = ALBUM_SIZE) Integer albumSize,
-			@RequestParam(value = "videolimit", required = false, defaultValue = VIDEO_SIZE) Integer videoSize,
-			@RequestParam(value = "sortType", required = false, defaultValue = SORT) String sort) {
+			@RequestParam(value = "albumSize", required = false, defaultValue = ALBUM_SIZE) Integer albumSize,
+			@RequestParam(value = "videoSize", required = false, defaultValue = VIDEO_SIZE) Integer videoSize,
+			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort) {
 		// TODO
 		Map<String, Object> map = new HashMap<>();
 		map.put("arg1", new Long(1000));
@@ -154,7 +158,7 @@ public class AlbumController extends BaseController {
 	@RequestMapping(value = "albums/works", params = "type=special", method = RequestMethod.GET)
 	public String getSpecialAlbumWorkList(
 			@RequestParam(value = "identifier", required = true) String identifier,
-			@RequestParam(value = "sortType", required = false, defaultValue = SORT) String sortType,
+			@RequestParam(value = "sortType", required = false, defaultValue = SORT_MANUAL) String sortType,
 			@RequestParam(value = "start", required = false, defaultValue = START) Integer start,
 			@RequestParam(value = "limit", required = false) Integer limit) {
 		// TODO
@@ -175,13 +179,25 @@ public class AlbumController extends BaseController {
 	 */
 	@ApiOperation(value="A11", notes="查询专辑视频清单")
 	@GetMapping("albums/{albumId}/videos")
-	public String getAlbumVideoList(
-			@PathVariable(value = "albumId", required =true) String albumId,
+	public Object getAlbumVideoList(
+			@PathVariable(value = "albumId", required = true) Integer albumId,
 			@RequestParam(value = "page", required = false, defaultValue = PAGE) Integer page,
 			@RequestParam(value = "size", required = false, defaultValue = SIZE) Integer size,
-			@RequestParam(value = "sort", required = false, defaultValue = SORT) String sort) {
-		// TODO
-		return  albumId;
+			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort) {
+		// TODO 通用排序
+		Sort sortType = this.getCommonSort(sort, false);
+	    Pageable pageable = new PageRequest(page, size, sortType);  
+	       
+		Page<VideoFullView> videoViewPage =  this.videoViewService.findFullByAlbumIdAndQueryWithPage(Long.valueOf(albumId), pageable);
+		
+		//转换json
+		RootVo rootVo = JsonUtils.createRoot();
+		List<DataVo<VideoVo>> dataList = new ArrayList<DataVo<VideoVo>>();
+		VideoVo videoVo = null;
+		DataVo<VideoVo> dataVo = null;
+				
+				
+		return  videoViewPage.getContent();
 	}
 
 

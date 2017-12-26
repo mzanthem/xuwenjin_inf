@@ -71,7 +71,7 @@ public class Work extends BaseEntity {
 	 */
 	private Integer likeCountEdit = 0;
 	/**
-	 * 点赞总数?
+	 * 点赞总数
 	 */
 	@Transient
 	private Integer likeCount;

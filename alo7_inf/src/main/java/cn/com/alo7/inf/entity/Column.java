@@ -96,7 +96,7 @@ public class Column extends BaseEntity{
 		this.status = status;
 	}
 
-	public long getPosition() {
+	public Long getPosition() {
 		return position;
 	}
 

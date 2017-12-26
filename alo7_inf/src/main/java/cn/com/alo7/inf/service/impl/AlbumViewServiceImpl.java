@@ -43,7 +43,6 @@ public class AlbumViewServiceImpl implements IAlbumViewService {
 	 */
 	@Override
 	public AlbumView findAlbumById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return albumViewRepository.findOne(id);
 	}
 }

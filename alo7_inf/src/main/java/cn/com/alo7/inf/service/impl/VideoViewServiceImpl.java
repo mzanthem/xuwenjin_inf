@@ -60,6 +60,8 @@ public class VideoViewServiceImpl implements IVideoViewService {
 		ExampleMatcher matcher = ExampleMatcher.matching();
 		Example<VideoFullView> ex = Example.of(vfv, matcher);
 
+		
+		// 查询数量?
 		// 查询分页
 		Page<VideoFullView> pageList = videoFullViewRepository.findAll(ex, pageable);
 		return pageList;

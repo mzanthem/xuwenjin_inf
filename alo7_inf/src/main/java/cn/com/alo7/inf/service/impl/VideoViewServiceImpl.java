@@ -55,6 +55,7 @@ public class VideoViewServiceImpl implements IVideoViewService {
 	public Page<VideoFullView> findFullByAlbumIdAndQueryWithPage(Long albumId, Pageable pageable) {
 		// 创建查询信息
 		VideoFullView vfv = new VideoFullView();
+		vfv.setAlbumId(albumId);
 		// 创建匹配器
 		ExampleMatcher matcher = ExampleMatcher.matching();
 		Example<VideoFullView> ex = Example.of(vfv, matcher);

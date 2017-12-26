@@ -11,5 +11,5 @@ import cn.com.alo7.inf.entity.VideoFullView;
  *
  */
 @Repository
-public interface VideoFullViewRepository extends JpaRepository<VideoFullView, Long>{
+public interface VideoFullViewRepository extends JpaRepository<VideoFullView, Long> {
 }

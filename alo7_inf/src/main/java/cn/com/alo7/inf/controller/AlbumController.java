@@ -195,7 +195,7 @@ public class AlbumController extends BaseController {
 		List<DataVo<VideoVo>> dataList = new ArrayList<DataVo<VideoVo>>();
 		VideoVo videoVo = null;
 		DataVo<VideoVo> dataVo = null;
-				
+		System.out.println("-------------------------------");
 				
 		return  videoViewPage.getContent();
 	}

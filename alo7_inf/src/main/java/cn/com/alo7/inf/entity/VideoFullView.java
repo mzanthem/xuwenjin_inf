@@ -43,13 +43,16 @@ public class VideoFullView extends BaseEntity {
 	private String isPassed;
 	private String status;
 	private String isDisplay;
-
+	/**
+	 * 视频内部排序
+	 */
+	private String position;
 	/**
 	 * sys_album_video_ref.album_id
 	 */
 	private Long albumId;
 	/**
-	 * 手动排序 manual
+	 * 专辑视频手动排序 manual
 	 */
 	private String manual;
 
@@ -58,7 +61,7 @@ public class VideoFullView extends BaseEntity {
 	 */
 	private Date releasedTime;
 	/**
-	 * 点赞排序
+	 * 作品排序
 	 */
 	private Integer hot;
 
@@ -182,6 +185,14 @@ public class VideoFullView extends BaseEntity {
 
 	public void setIsDisplay(String isDisplay) {
 		this.isDisplay = isDisplay;
+	}
+
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
 	}
 
 	public Long getAlbumId() {

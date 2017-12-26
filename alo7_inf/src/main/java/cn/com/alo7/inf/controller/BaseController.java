@@ -27,20 +27,20 @@ public class BaseController {
 	protected static final String START = "1";
 	protected static final String END = "99999999";
 	
-	private static Map<String, String> sortMap = new HashMap<>();
+//	private static Map<String, String> sortMap = new HashMap<>();
+//	
+//	private static final String MANUAL_POSITION = "position";
+//	private static final String DATE_UPDATED_AT = "updated_at";
+//	private static final String HOT_COUNT = "count";
 	
-	private static final String MANUAL_POSITION = "position";
-	private static final String DATE_UPDATED_AT = "updated_at";
-	private static final String HOT_COUNT = "count";
-	
-	/**
-	 * 默认构造函数
-	 */
-	public BaseController() {
-		sortMap.put(SORT_MANUAL, MANUAL_POSITION);
-		sortMap.put(SORT_RELEASED_TIME, DATE_UPDATED_AT);
-		sortMap.put(SORT_HOT, HOT_COUNT);
-	}
+//	/**
+//	 * 默认构造函数
+//	 */
+//	public BaseController() {
+//		sortMap.put(SORT_MANUAL, MANUAL_POSITION);
+//		sortMap.put(SORT_RELEASED_TIME, DATE_UPDATED_AT);
+//		sortMap.put(SORT_HOT, HOT_COUNT);
+//	}
 	
 	/**
 	 * 通用排序方法
@@ -52,10 +52,10 @@ public class BaseController {
 	protected Sort getCommonSort(String orderField, boolean isASC) {
 		
 		String orderType = isASC ? "asc" : "desc"; 
-		String personalField = sortMap.get(orderField);
+//		String personalField = sortMap.get(orderField);
+//		String field = (null == personalField) ? orderField : personalField;
 		
-		String field = (null == personalField) ? orderField : personalField;
-		Sort sort = SortUtils.baseSort(orderType, field); 
+		Sort sort = SortUtils.baseSort(orderType, orderField); 
 		
 		return sort;
 	}

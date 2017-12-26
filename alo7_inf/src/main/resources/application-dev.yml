@@ -6,6 +6,7 @@ server:
     uri-encoding: UTF-8
 
 spring:
+  profiles: dev
   datasource: 
     url: jdbc:mysql://njfhoddiowm4yjdj.dev.mysql.saybot.net:3306/love_dubbing
     username: love_dubbing

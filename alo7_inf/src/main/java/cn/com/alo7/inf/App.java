@@ -8,19 +8,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
-public class App 
-{
-	//在我们controller中注入RestTemplate
-	@Autowired
-	private RestTemplateBuilder builder;
-	
-	@Bean
-	public RestTemplate restTemplate(){
-		return builder.build();
-	}
-	
-    public static void main( String[] args )
-    {
+public class App {
+    //在我们controller中注入RestTemplate
+    @Autowired
+    private RestTemplateBuilder builder;
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return builder.build();
+    }
+
+    public static void main(String[] args) {
         SpringApplication.run(App.class, args);
     }
 }

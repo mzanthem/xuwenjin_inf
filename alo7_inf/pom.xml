@@ -21,6 +21,13 @@
     <version>1.5.4.RELEASE</version>  
   </parent>
 
+    <repositories>
+        <repository>
+            <id>alo7 release</id>
+            <name>alo7 Repository</name>
+            <url>http://repos.saybot.net/repository/maven-public/</url>
+        </repository>
+    </repositories>
   <dependencies>
     <dependency>
       <groupId>org.springframework.cloud</groupId>

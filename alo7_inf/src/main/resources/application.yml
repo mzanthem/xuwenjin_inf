@@ -6,6 +6,8 @@ server:
     uri-encoding: UTF-8
 
 spring:
+  profiles:
+      active: dev
   datasource: 
     url: jdbc:mysql://127.0.0.1:3306/alo7_dub
     username: root

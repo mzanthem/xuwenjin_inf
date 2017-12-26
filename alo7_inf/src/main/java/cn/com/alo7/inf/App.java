@@ -2,8 +2,10 @@ package cn.com.alo7.inf;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
+@ComponentScan(value = "cn.com.alo7.inf")
 public class App 
 {
     public static void main( String[] args )

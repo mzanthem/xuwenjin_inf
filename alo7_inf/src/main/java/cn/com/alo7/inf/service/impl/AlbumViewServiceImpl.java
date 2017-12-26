@@ -37,4 +37,12 @@ public class AlbumViewServiceImpl implements IAlbumViewService {
 		Example<AlbumView> ex = Example.of(albumView, matcher);
 		return albumViewRepository.findAll(ex, pageable);
 	}
+
+	/**
+	 * 根据id查找专辑信息
+	 */
+	@Override
+	public AlbumView findAlbumById(Long id) {
+		return albumViewRepository.findOne(id);
+	}
 }

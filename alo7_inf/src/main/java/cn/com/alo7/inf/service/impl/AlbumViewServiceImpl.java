@@ -38,8 +38,11 @@ public class AlbumViewServiceImpl implements IAlbumViewService {
 		return albumViewRepository.findAll(ex, pageable);
 	}
 
+	/**
+	 * 根据id查找专辑信息
+	 */
 	@Override
-	public AlbumView findAlbumById(Integer id) {
+	public AlbumView findAlbumById(Long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

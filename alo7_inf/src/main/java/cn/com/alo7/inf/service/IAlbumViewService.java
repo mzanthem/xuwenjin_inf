@@ -26,5 +26,5 @@ public interface IAlbumViewService {
 	 * @param id
 	 * @return
 	 */
-	AlbumView findAlbumById(Integer id);
+	AlbumView findAlbumById(Long id);
 }

@@ -185,19 +185,32 @@ public class AlbumController extends BaseController {
 			@RequestParam(value = "size", required = false, defaultValue = SIZE) Integer size,
 			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort) {
 		// TODO 通用排序
+		//根据id查找专辑
+		AlbumView albumView = this.albumViewService.findAlbumById(Long.valueOf(albumId));
+		if (null == albumView) {
+			return null; //返回空的结果
+		}
+		
 		Sort sortType = this.getCommonSort(sort, false);
 	    Pageable pageable = new PageRequest(page, size, sortType);  
-	       
+	    
 		Page<VideoFullView> videoViewPage =  this.videoViewService.findFullByAlbumIdAndQueryWithPage(Long.valueOf(albumId), pageable);
 		
-		//转换json
+		//root包含 data,included和mata
 		RootVo rootVo = JsonUtils.createRoot();
-		List<DataVo<VideoVo>> dataList = new ArrayList<DataVo<VideoVo>>();
-		VideoVo videoVo = null;
-		DataVo<VideoVo> dataVo = null;
-		System.out.println("-------------------------------");
-				
-		return  videoViewPage.getContent();
+		//构造data
+		AlbumVo albumVo = new AlbumVo();
+		BeanUtils.copyProperties(albumView, albumVo);
+		//data
+		DataVo<AlbumVo> dataVo = JsonUtils.setData(albumVo.getId(), "album", albumVo);
+		//TODO 
+//		dataVo.setRelationships(relationships);
+		
+		
+		
+		
+		
+		return  rootVo;
 	}
 
 

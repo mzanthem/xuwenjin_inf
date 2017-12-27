@@ -1,5 +1,7 @@
 package cn.com.alo7.inf.service;
 
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -24,4 +26,11 @@ public interface IVideoViewService {
 	 * @return
 	 */
 	Page<VideoFullView> findFullByAlbumIdAndQueryWithPage(Long albumId, Pageable pageable);
+	
+	/**
+	 * 根据专辑id查询视频总数&视频下作品总数
+	 * @param albumId
+	 * @return
+	 */
+	Map<String, Object> findVideoAndWorkTotal(Long albumId);
 }

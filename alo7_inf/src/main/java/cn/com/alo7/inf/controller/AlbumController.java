@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import cn.com.alo7.inf.common.utils.JsonUtils;
 import cn.com.alo7.inf.entity.AlbumView;
 import cn.com.alo7.inf.entity.VideoFullView;
@@ -117,7 +116,7 @@ public class AlbumController extends BaseController {
 	 * @param sort
 	 * @return
 	 */
-	@ApiOperation(tags = "9", value = "A12", notes = "查询特殊专辑视频清单", httpMethod = "GET")
+	@ApiOperation(tags = "A12", value = "A12", notes = "查询特殊专辑视频清单", httpMethod = "GET")
 	@RequestMapping(name = "A12", value = "albums/videos", params = "type=special", method = RequestMethod.GET)
 	public String getSpeciallbumVideoList(
 			@RequestParam(value = "albumVideoNum", required = false) Integer albumVideoNum,
@@ -144,6 +143,9 @@ public class AlbumController extends BaseController {
 			@RequestParam(value = "videoSize", required = false, defaultValue = VIDEO_SIZE) Integer videoSize,
 			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort) {
 		// TODO
+		//查找一般作品专辑
+		
+		
 		Map<String, Object> map = new HashMap<>();
 		map.put("arg1", new Long(1000));
 		map.put("arg2", "Mz");
@@ -222,8 +224,7 @@ public class AlbumController extends BaseController {
 		RelationshipVo<RelationshipDataVo> relationshipVo = new RelationshipVo<>(true);
 		List<DataVo<VideoVo>> includedList = new ArrayList<>();
 		DataVo<VideoVo> included;
-		int videoCount = 0;
-		int videoWorkCount = 0;
+		
 		for (VideoFullView videoFullView : videoViewPage) {
 			// 构建relationships
 			RelationshipDataVo relationshipDataVo = new RelationshipDataVo(videoFullView.getId(), "video"); //id,type 最里层
@@ -236,8 +237,6 @@ public class AlbumController extends BaseController {
 			includedList.add(included);
 			
 			// 构建meta[作品数累积]
-			videoCount++;
-			videoWorkCount += videoFullView.getHot();
 		}
 		Map<String, Object> relationships = new HashMap<String, Object>();
 		relationships.put("video", relationshipVo);
@@ -245,14 +244,15 @@ public class AlbumController extends BaseController {
 		rootVo.setData(albumDataVo);
 		
 		rootVo.setIncluded(includedList);
-		// mata [显示查询出的结果的统计?还是所有的]
-		Map<String, Object> meta = new HashMap<>();
-		meta.put("videoCount", videoCount);
-		meta.put("videoWorkCount", videoWorkCount);
-		
+		// mata [显示所有的]
+//		Map<String, Object> meta = new HashMap<>();
+//		int videoCount = 0;
+//		int videoWorkCount = 0;
+//		meta.put("videoCount", videoCount);
+//		meta.put("videoWorkCount", videoWorkCount);
+		Map<String, Object> meta =  this.videoViewService.findVideoAndWorkTotal(albumView.getId());
 		
 		rootVo.setMeta(meta);
-		
 		return rootVo;
 	}
 

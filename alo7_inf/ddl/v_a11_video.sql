@@ -1,5 +1,5 @@
-DROP VIEW IF EXISTS `v_a13_video`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `v_a13_video` AS (
+DROP VIEW IF EXISTS `v_a11_video`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `v_a11_video` AS (
 	select 
 		sv.id,
 		sv.name,

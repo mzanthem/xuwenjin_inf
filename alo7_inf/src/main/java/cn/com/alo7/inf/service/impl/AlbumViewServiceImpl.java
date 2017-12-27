@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import cn.com.alo7.inf.common.Constant;
 import cn.com.alo7.inf.common.utils.PageUtils;
 import cn.com.alo7.inf.entity.AlbumView;
 import cn.com.alo7.inf.repository.AlbumViewRepository;
@@ -44,5 +45,13 @@ public class AlbumViewServiceImpl implements IAlbumViewService {
 	@Override
 	public AlbumView findAlbumById(Long id) {
 		return albumViewRepository.findOne(id);
+	}
+
+	/**
+	 * 根据专辑code,查找特殊专辑
+	 */
+	@Override
+	public AlbumView findSpecialAlbumByCode(String identifier) {
+		return albumViewRepository.findByTypeAndSpecialTypeCode(Constant.ALBUM_TYPE_SPECIAL, identifier);
 	}
 }

@@ -27,4 +27,11 @@ public interface IAlbumViewService {
 	 * @return
 	 */
 	AlbumView findAlbumById(Long id);
+	
+	/**
+	 * 根据专辑code,查找特殊专辑
+	 * @param identifier
+	 * @return
+	 */
+	AlbumView findSpecialAlbumByCode(String identifier);
 }

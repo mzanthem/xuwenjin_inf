@@ -24,6 +24,9 @@ public abstract class Constant {
     //作品量排序
     public static final String SORT_HOT = "hot";
 
+    
+    public static final String ALBUM_TYPE_COMMON = "1";
+    public static final String ALBUM_TYPE_SPECIAL = "2";
     /**
      * 发布状态
      */

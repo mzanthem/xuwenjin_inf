@@ -126,12 +126,14 @@ public class AlbumController extends BaseController {
 	}
 
 	/**
-	 * A10-查询一般作品专辑清单
-	 * albums/works?type=commonly&albumlimit=albumlimit&videolimit=videolimit&sortType=sortType
+	 * A10-查询一般作品专辑清单 -->有问题?
+	 * 翻页的话,翻页条件在哪?
+	 * 视频从哪里获得--作品吗?
+	 * albums/works?type=commonly&albumSize=albumSize&videoSize=videoSize&sort=sort
 	 * 
-	 * @param albumSize
-	 * @param videoSize
-	 * @param sort
+	 * @param albumSize	专辑个数 4-6
+	 * @param videoSize 专辑下显示视频数目  4
+	 * @param sort 专辑下作品排序规则
 	 * @return
 	 * @author mazan
 	 */
@@ -155,28 +157,31 @@ public class AlbumController extends BaseController {
 
 	/**
 	 * A13-查询特殊作品专辑视频清单
-	 * albums/works?type=special&identifier=identifier&sortType=sortType&start=start&limit=limit
+	 * albums/works?type=special&identifier=identifier&sort=sort&page=page&size=size		
 	 * 
 	 * @param identifier
 	 *            特殊专辑code
-	 * @param sortType
-	 * @param start
-	 * @param limit
+	 * @param sort 专辑下视频排序
+	 * @param page 当前页数
+	 * @param size 每页记录数
 	 * @return
 	 */
 	@ApiOperation(value = "A13", notes = "查询特殊作品专辑视频清单", httpMethod = "GET")
 	@ApiImplicitParam(name = "type", value = "作品类型", required = true, paramType = "String", allowableValues = "special")
 	@RequestMapping(value = "albums/works", params = "type=special", method = RequestMethod.GET)
-	public String getSpecialAlbumWorkList(@RequestParam(value = "identifier", required = true) String identifier,
-			@RequestParam(value = "sortType", required = false, defaultValue = SORT_MANUAL) String sortType,
-			@RequestParam(value = "start", required = false, defaultValue = START) Integer start,
-			@RequestParam(value = "limit", required = false) Integer limit) {
+	public Object getSpecialAlbumWorkList(
+			@RequestParam(value = "identifier", required = true) String identifier,
+			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort,
+			@RequestParam(value = "page", required = false, defaultValue = START) Integer page,
+			@RequestParam(value = "size", required = false) Integer size) {
 		// TODO
-		Map<String, Object> map = new HashMap<>();
-		map.put("arg1", new Long(1000));
-		map.put("arg2", "Mz2");
-
-		return JsonUtils.toJson(map);
+		//根据专辑code查找专辑 【是否唯一?】
+		AlbumView albumView = this.albumViewService.findSpecialAlbumByCode(identifier);
+		if (null == albumView) {
+			System.out.println("album is null  ");
+			return null;
+		}
+		return null;
 	}
 
 	/**

@@ -32,6 +32,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `v_a11_video` AS (
     left join v_video_work_count vvwc on sv.id = vvwc.video_id 
 	
     where savr.delete_flag = '0'
+      and savr.type = '1'
 	  and sv.delete_flag = '0'
 	  and sv.status = 'up'
 	

@@ -161,7 +161,7 @@ public class AlbumController extends BaseController {
 	 * 
 	 * @param identifier
 	 *            特殊专辑code
-	 * @param sort 专辑下视频排序
+	 * @param sort 专辑下视频排序 【查出来作品列表--再反查视频？】
 	 * @param page 当前页数
 	 * @param size 每页记录数
 	 * @return
@@ -215,8 +215,7 @@ public class AlbumController extends BaseController {
 		Sort sortType = this.getCommonSort(sort, false);
 		Pageable pageable = new PageRequest(page, size, sortType);
 
-		// root
-		RootVo rootVo = JsonUtils.createRoot();
+		
 		// 构造data
 		AlbumVo albumVo = new AlbumVo();
 		BeanUtils.copyProperties(albumView, albumVo);
@@ -241,11 +240,14 @@ public class AlbumController extends BaseController {
 			included = (DataVo<VideoVo>) JsonUtils.setData(videoFullView.getId(), "video", videoVo);
 			includedList.add(included);
 			
-			// 构建meta[作品数累积]
 		}
 		Map<String, Object> relationships = new HashMap<String, Object>();
 		relationships.put("video", relationshipVo);
 		albumDataVo.setRelationships(relationships);
+		
+		
+		// root
+		RootVo rootVo = JsonUtils.createRoot();
 		rootVo.setData(albumDataVo);
 		
 		rootVo.setIncluded(includedList);

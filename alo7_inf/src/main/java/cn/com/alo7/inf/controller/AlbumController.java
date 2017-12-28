@@ -21,14 +21,18 @@ import cn.com.alo7.inf.common.utils.PageUtils;
 import cn.com.alo7.inf.entity.AlbumView;
 import cn.com.alo7.inf.entity.VideoFullView;
 import cn.com.alo7.inf.entity.VideoView;
+import cn.com.alo7.inf.entity.WorkFullView;
 import cn.com.alo7.inf.service.IAlbumViewService;
 import cn.com.alo7.inf.service.IVideoViewService;
+import cn.com.alo7.inf.service.IWorkViewService;
 import cn.com.alo7.inf.vo.AlbumVo;
 import cn.com.alo7.inf.vo.DataVo;
 import cn.com.alo7.inf.vo.RelationshipDataVo;
+import cn.com.alo7.inf.vo.RelationshipListVo;
 import cn.com.alo7.inf.vo.RelationshipVo;
 import cn.com.alo7.inf.vo.RootVo;
 import cn.com.alo7.inf.vo.VideoVo;
+import cn.com.alo7.inf.vo.WorkVo;
 import io.swagger.annotations.ApiOperation;
 
 /**
@@ -41,12 +45,23 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 public class AlbumController extends BaseController {
 
+	/**
+	 * 专辑service
+	 */
 	@Autowired
 	private IAlbumViewService albumViewService;
 
+	/**
+	 * 视频service
+	 */
 	@Autowired
 	private IVideoViewService videoViewService;
-
+	
+	/**
+	 * 作品service
+	 */
+	@Autowired
+	private IWorkViewService workViewService;
 	/**
 	 * A09-查询一般视频专辑清单 type=commonly A12-查询特殊专辑视频清单type=special
 	 * 
@@ -171,7 +186,7 @@ public class AlbumController extends BaseController {
 			@RequestParam(value = "type", required = true) String type,
 			@RequestParam(value = "identifier", required = true) String identifier,
 			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort,
-			@RequestParam(value = "page", required = false, defaultValue = START) Integer page,
+			@RequestParam(value = "page", required = false, defaultValue = PAGE) Integer page,
 			@RequestParam(value = "size", required = false) Integer size) {
 		// TODO
 		//根据专辑code查找专辑 【是否唯一?】
@@ -180,12 +195,71 @@ public class AlbumController extends BaseController {
 			System.out.println("album is null  ");
 			return null;
 		}
+		Long albumId = albumView.getId();
+		System.out.println("albumId is " + albumId);
+		// 构造data
+		AlbumVo albumVo = new AlbumVo();
+		BeanUtils.copyProperties(albumView, albumVo);
+		DataVo<AlbumVo> albumDataVo = JsonUtils.setData(albumId, "album", albumVo);
+				
+				
 		//翻页查询
-		Pageable pageable = PageUtils.page(page, size, sort);
+		Pageable pageable = PageUtils.build(page, size, sort);
+		Page<WorkFullView> workList = this.workViewService.findWorkByAlbumId(2L, pageable);
+		System.out.println(workList.getContent().size());
+		
+		List<Object> includedList = new ArrayList<>();
+		
+		RelationshipListVo<RelationshipDataVo> relationshipVoWork = new RelationshipListVo<>(true);
+		DataVo<WorkVo> included;
+		
+		for (WorkFullView workFullView : workList) {
+			// 构建relationships
+			RelationshipDataVo relationshipDataVo = new RelationshipDataVo(workFullView.getId(), "work"); //id,type 最里层
+			relationshipVoWork.getData().add(relationshipDataVo);
+			
+			// 构建included
+			WorkVo workVo = new WorkVo();
+			BeanUtils.copyProperties(workFullView, workVo);
+			included = (DataVo<WorkVo>) JsonUtils.setData(workFullView.getId(), "work", workVo);
+			// 构建author信息
+			RelationshipDataVo relationshipDataVoAuthor = new RelationshipDataVo(1L, "user"); //id,type 最里层
+			RelationshipVo<RelationshipDataVo> relationshipVoAuthor = new RelationshipVo<>(relationshipDataVoAuthor);
+			//album下作者关联
+			Map<String, Object> relationships = new HashMap<String, Object>();
+			relationships.put("author", relationshipVoAuthor);
+			included.setRelationships(relationships);
+			
+			includedList.add(included);
+			
+		}
 		
 		
+		//所有作者的信息 列表[模拟]
+		List<Map<String, Object>> list = this.mockUserList();
+		DataVo<Map<String, Object>> userInclude;
+		for (Map<String, Object> map : list) {
+			userInclude = JsonUtils.setData(1L, "user", map);
+			includedList.add(userInclude);
+		}
 		
-		return null;
+		//album下work关联
+		Map<String, Object> relationships = new HashMap<String, Object>();
+		relationships.put("work", relationshipVoWork);
+		albumDataVo.setRelationships(relationships);
+		
+		
+		// root
+		RootVo rootVo = JsonUtils.createRoot();
+		rootVo.setData(albumDataVo);
+		
+		rootVo.setIncluded(includedList);
+		// mata [显示所有的作品]
+		Map<String, Object> meta =  this.workViewService.findWorkTotal(albumView.getId());
+		
+		rootVo.setMeta(meta);
+		
+		return rootVo;
 	}
 
 	/**
@@ -216,25 +290,24 @@ public class AlbumController extends BaseController {
 			return null; // 返回空的结果
 		}
 		
-		Pageable pageable = PageUtils.page(page, size, sort);
 		
 		// 构造data
 		AlbumVo albumVo = new AlbumVo();
 		BeanUtils.copyProperties(albumView, albumVo);
 		DataVo<AlbumVo> albumDataVo = JsonUtils.setData(albumVo.getId(), "album", albumVo);
 		
-
+		Pageable pageable = PageUtils.build(page, size, sort);
 		Page<VideoFullView> videoViewPage = this.videoViewService
 				.findFullByAlbumIdAndQueryWithPage(Long.valueOf(albumId), pageable);
 		
-		RelationshipVo<RelationshipDataVo> relationshipVo = new RelationshipVo<>(true);
+		RelationshipListVo<RelationshipDataVo> relationshipListVo = new RelationshipListVo<>(true);
 		List<DataVo<VideoVo>> includedList = new ArrayList<>();
 		DataVo<VideoVo> included;
 		
 		for (VideoFullView videoFullView : videoViewPage) {
 			// 构建relationships
 			RelationshipDataVo relationshipDataVo = new RelationshipDataVo(videoFullView.getId(), "video"); //id,type 最里层
-			relationshipVo.getData().add(relationshipDataVo);
+			relationshipListVo.getData().add(relationshipDataVo);
 			
 			// 构建included
 			VideoVo videoVo = new VideoVo();
@@ -244,7 +317,7 @@ public class AlbumController extends BaseController {
 			
 		}
 		Map<String, Object> relationships = new HashMap<String, Object>();
-		relationships.put("video", relationshipVo);
+		relationships.put("video", relationshipListVo);
 		albumDataVo.setRelationships(relationships);
 		
 		
@@ -254,15 +327,24 @@ public class AlbumController extends BaseController {
 		
 		rootVo.setIncluded(includedList);
 		// mata [显示所有的]
-//		Map<String, Object> meta = new HashMap<>();
-//		int videoCount = 0;
-//		int videoWorkCount = 0;
-//		meta.put("videoCount", videoCount);
-//		meta.put("videoWorkCount", videoWorkCount);
 		Map<String, Object> meta =  this.videoViewService.findVideoAndWorkTotal(albumView.getId());
 		
 		rootVo.setMeta(meta);
 		return rootVo;
 	}
 
+	/**
+	 * 模拟作品作者
+	 * @return
+	 */
+	private List<Map<String, Object>> mockUserList() {
+		Map<String, Object> map = new HashMap<>();
+		map.put("avatarUrl", "图像Url");
+		map.put("name", "Gebhardt");
+		
+		List<Map<String, Object>> list = new ArrayList<>();
+		list.add(map);
+		return list;
+		
+	}
 }

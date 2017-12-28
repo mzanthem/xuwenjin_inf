@@ -9,7 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import cn.com.alo7.inf.entity.base.BaseEntity;
 
@@ -63,15 +62,15 @@ public class WorkFullView extends BaseEntity {
 	/**
 	 * 内部点赞数						
 	 */
-	private Integer likeCountIn = 0;
+	private Integer likeCountIn;
 	/**
 	 * 外部点赞数						
 	 */
-	private Integer likeCountOut = 0;
+	private Integer likeCountOut;
 	/**
 	 * 编辑点赞数						
 	 */
-	private Integer likeCountEdit = 0;
+	private Integer likeCountEdit;
 	/**
 	 * 点赞总数
 	 */
@@ -102,6 +101,8 @@ public class WorkFullView extends BaseEntity {
 	 * 视频作品量
 	 */
 	private Integer hot;
+	
+	
 	public Long getId() {
 		return id;
 	}
@@ -203,6 +204,14 @@ public class WorkFullView extends BaseEntity {
 	}
 	public void setHot(Integer hot) {
 		this.hot = hot;
+	}
+	@Override
+	public String toString() {
+		return "WorkFullView [id=" + id + ", uuid=" + uuid + ", video=" + video + ", title=" + title
+				+ ", voiceTrackUrl=" + voiceTrackUrl + ", status=" + status + ", isInBlacklist=" + isInBlacklist
+				+ ", likeCountIn=" + likeCountIn + ", likeCountOut=" + likeCountOut + ", likeCountEdit=" + likeCountEdit
+				+ ", likeCount=" + likeCount + ", isLiked=" + isLiked + ", shareUrl=" + shareUrl + ", albumId="
+				+ albumId + ", manual=" + manual + ", todayVideo=" + todayVideo + ", hot=" + hot + "]";
 	}
 	
 	

@@ -15,6 +15,12 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `v_a13_work` AS (
 		IF(sw.like_count_in + sw.like_count_out + sw.like_count_edit > 0,'yes','no') as is_liked,
 		sw.share_url,
 		
+		sw.delete_flag,
+		sw.created_by,
+		sw.created_at,
+		sw.updated_by,
+		sw.updated_at,
+		sw.version,
 		savr.album_id,
 	    
 		vav.manual as manual,  -- 专辑视频的手动位置 Q:那sv.position代表什么
@@ -25,7 +31,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `v_a13_work` AS (
     inner join v_a11_video  vav on vav.id = sw.video_id  -- 作品反查视频 
 
     where savr.delete_flag = '0'
-      and savr.type = '1'
+      and savr.type = '2'    -- 类型：2为作品
 	  and sw.delete_flag = '0'
 	  and sw.status = 'released'
 	

@@ -8,9 +8,7 @@ import java.util.Map;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cn.com.alo7.inf.common.utils.JsonUtils;
+import cn.com.alo7.inf.common.utils.PageUtils;
 import cn.com.alo7.inf.entity.AlbumView;
 import cn.com.alo7.inf.entity.VideoFullView;
 import cn.com.alo7.inf.entity.VideoView;
@@ -30,7 +29,6 @@ import cn.com.alo7.inf.vo.RelationshipDataVo;
 import cn.com.alo7.inf.vo.RelationshipVo;
 import cn.com.alo7.inf.vo.RootVo;
 import cn.com.alo7.inf.vo.VideoVo;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 
 /**
@@ -138,9 +136,9 @@ public class AlbumController extends BaseController {
 	 * @author mazan
 	 */
 	@ApiOperation(value = "A10", notes = "查询一般作品专辑清单", httpMethod = "GET")
-	@ApiImplicitParam(name = "type", value = "作品类型", required = true, paramType = "String", allowableValues = "commonly")
 	@RequestMapping(value = "albums/works", params = "type=commonly", method = RequestMethod.GET)
 	public String getCommonlyAlbumWorkList(
+			@RequestParam(value = "type", required = true) String type,
 			@RequestParam(value = "albumSize", required = false, defaultValue = ALBUM_SIZE) Integer albumSize,
 			@RequestParam(value = "videoSize", required = false, defaultValue = VIDEO_SIZE) Integer videoSize,
 			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort) {
@@ -167,9 +165,10 @@ public class AlbumController extends BaseController {
 	 * @return
 	 */
 	@ApiOperation(value = "A13", notes = "查询特殊作品专辑视频清单", httpMethod = "GET")
-	@ApiImplicitParam(name = "type", value = "作品类型", required = true, paramType = "String", allowableValues = "special")
-	@RequestMapping(value = "albums/works", params = "type=special", method = RequestMethod.GET)
+//	@ApiImplicitParam(name = "type", value = "作品类型", required = true, paramType = "String", allowableValues = "special")
+	@RequestMapping(value = "albums/works2", params = "type=special", method = RequestMethod.GET)
 	public Object getSpecialAlbumWorkList(
+			@RequestParam(value = "type", required = true) String type,
 			@RequestParam(value = "identifier", required = true) String identifier,
 			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort,
 			@RequestParam(value = "page", required = false, defaultValue = START) Integer page,
@@ -181,6 +180,11 @@ public class AlbumController extends BaseController {
 			System.out.println("album is null  ");
 			return null;
 		}
+		//翻页查询
+		Pageable pageable = PageUtils.page(page, size, sort);
+		
+		
+		
 		return null;
 	}
 
@@ -211,10 +215,8 @@ public class AlbumController extends BaseController {
 			System.out.println("album is null");
 			return null; // 返回空的结果
 		}
-
-		Sort sortType = this.getCommonSort(sort, false);
-		Pageable pageable = new PageRequest(page, size, sortType);
-
+		
+		Pageable pageable = PageUtils.page(page, size, sort);
 		
 		// 构造data
 		AlbumVo albumVo = new AlbumVo();

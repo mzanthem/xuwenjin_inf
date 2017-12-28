@@ -1,12 +1,5 @@
 package cn.com.alo7.inf.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.data.domain.Sort;
-
-import cn.com.alo7.inf.common.utils.SortUtils;
-
 /**
  * 通用controller
  * @author mazan
@@ -42,21 +35,5 @@ public class BaseController {
 //		sortMap.put(SORT_HOT, HOT_COUNT);
 //	}
 	
-	/**
-	 * 通用排序方法
-	 * 
-	 * @param sortStr
-	 * @param isASC
-	 * @return
-	 */
-	protected Sort getCommonSort(String orderField, boolean isASC) {
-		
-		String orderType = isASC ? "asc" : "desc"; 
-//		String personalField = sortMap.get(orderField);
-//		String field = (null == personalField) ? orderField : personalField;
-		
-		Sort sort = SortUtils.baseSort(orderType, orderField); 
-		
-		return sort;
-	}
+
 }

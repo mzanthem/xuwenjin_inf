@@ -13,9 +13,4 @@ import cn.com.alo7.inf.entity.AlbumView;
 @Repository
 public interface AlbumViewRepository extends JpaRepository<AlbumView, Long>{
 	
-	/**
-	 * 查找用户作品的特殊专辑
-	 * @return
-	 */
-	AlbumView findByTypeAndSpecialTypeCode(String type, String code);
 }

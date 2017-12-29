@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import cn.com.alo7.inf.common.Constant;
 import cn.com.alo7.inf.common.utils.JsonUtils;
 import cn.com.alo7.inf.common.utils.PageUtils;
+import cn.com.alo7.inf.entity.AlbumFullView;
 import cn.com.alo7.inf.entity.AlbumView;
 import cn.com.alo7.inf.entity.VideoFullView;
 import cn.com.alo7.inf.entity.VideoView;
@@ -160,32 +161,73 @@ public class AlbumController extends BaseController {
 			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort) {
 		// TODO
 		//查找一般作品专辑
-		Pageable pageable = PageUtils.build(Constant.PAGE, albumSize, sort);
-		Page<AlbumView> albumPageList = this.albumViewService.findByTypeWithPage(pageable, type);
+		Pageable pageable = PageUtils.build(Constant.PAGE, albumSize);
+		Page<AlbumFullView> albumPageList = this.albumViewService.findByTypeWithPage(pageable, "1");
 		
-		List<DataVo<AlbumVo>> resultList = new ArrayList<>(); //data数组
-		List<DataVo<WorkVo>> includedList = new ArrayList<>(); //include数组
+		List<DataVo<AlbumVo>> DataList = new ArrayList<>(); //data数组
+		List<Object> includedList = new ArrayList<>(); //include数组
 		
 		//为每一个专辑构造data
-		DataVo<AlbumVo> dataVoAlbum;
-		for (AlbumView albumView : albumPageList) {
-			Long albumId = albumView.getId();
+		DataVo<AlbumVo> albumDataVo;
+		for (AlbumFullView albumFullView : albumPageList) {
+			Long albumId = albumFullView.getId();
 			//封装dataList
 			// 构造album data
-			dataVoAlbum = DataVoHelper.getInstance(albumId, "album", albumView, new AlbumVo());
+			albumDataVo = DataVoHelper.getInstance(albumId, "album", albumFullView, new AlbumVo());
 			
 			
-			//专辑下视频
-			Page<VideoVo> videoList;
+			//?专辑下视频?
+//			Page<VideoVo> videoList;
 			
-			//视频下作品
+			//专辑下作品
+			Pageable pageableWork = PageUtils.build(Constant.PAGE, Constant.SIZE, sort);
+			Page<WorkFullView> workVoList = this.workViewService.findWorkByAlbumId(albumId, pageableWork);
+			
+			//专辑下作品ship 初始化List<T>
+			RelationshipListVo<RelationshipDataVo> relationshipVoWork = new RelationshipListVo<>(true);
+			DataVo<WorkVo> included;
 			
 			//album data 的relationShip
+			for (WorkFullView workFullView : workVoList) {
+				Long workId = workFullView.getId();
+				
+				// 构建relationships
+				relationshipVoWork.getData().add(new RelationshipDataVo(workId, "work"));
+				
+				// 构建included data
+				included = (DataVo<WorkVo>)DataVoHelper.getInstance(workId, "work", workFullView, new WorkVo());
+				// 构建relationshiop author信息
+				RelationshipVo<RelationshipDataVo> relationshipVoAuthor = new RelationshipVo<>(new RelationshipDataVo(1L, "user"));
+				//album下作者关联
+				Map<String, Object> relationships = new HashMap<String, Object>();
+				relationships.put("author", relationshipVoAuthor);
+				included.setRelationships(relationships);
+				
+				includedList.add(included);
+			} //end for j
 			
-		}
+			//所有作者的信息 列表[模拟]
+			List<Map<String, Object>> list = this.mockUserList();
+			DataVo<Map<String, Object>> userInclude;
+			Long i = 0L;
+			for (Map<String, Object> map : list) {
+				
+				userInclude = JsonUtils.setData(i++, "user", map);
+				includedList.add(userInclude);
+			}
+			//album下work关联
+			Map<String, Object> relationships = new HashMap<String, Object>();
+			relationships.put("work", relationshipVoWork);
+			albumDataVo.setRelationships(relationships);
+			DataList.add(albumDataVo);
+		} //end for i
 		
+		
+		// root
 		RootVo rootVo = JsonUtils.createRoot();
+		rootVo.setData(DataList);
 		
+		rootVo.setIncluded(includedList);
 		return rootVo;
 	}
 
@@ -210,14 +252,14 @@ public class AlbumController extends BaseController {
 			@RequestParam(value = "page", required = false, defaultValue = PAGE) Integer page,
 			@RequestParam(value = "size", required = false) Integer size) {
 		//根据专辑code查找专辑 【唯一】
-		AlbumView albumView = this.albumViewService.findSpecialAlbumByCode(identifier);
-		if (null == albumView) {
+		AlbumFullView albumFullView = this.albumViewService.findSpecialAlbumByCode(identifier);
+		if (null == albumFullView) {
 			System.out.println("album is null  ");
 			return null;
 		}
-		Long albumId = albumView.getId();
+		Long albumId = albumFullView.getId();
 		// 构造data
-		DataVo<AlbumVo> albumDataVo = DataVoHelper.getInstance(albumId, "album", albumView, new AlbumVo());
+		DataVo<AlbumVo> albumDataVo = DataVoHelper.getInstance(albumId, "album", albumFullView, new AlbumVo());
 				
 				
 		//翻页查询
@@ -271,7 +313,7 @@ public class AlbumController extends BaseController {
 		
 		rootVo.setIncluded(includedList);
 		// mata [显示所有的作品]
-		Map<String, Object> meta =  this.workViewService.findWorkTotal(albumView.getId());
+		Map<String, Object> meta =  this.workViewService.findWorkTotal(albumFullView.getId());
 		
 		rootVo.setMeta(meta);
 		
@@ -299,8 +341,8 @@ public class AlbumController extends BaseController {
 			@RequestParam(value = "size", required = false, defaultValue = SIZE) Integer size,
 			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort) {
 		// 根据id查找专辑
-		AlbumView albumView = this.albumViewService.findAlbumById(Long.valueOf(albumId));
-		if (null == albumView) {
+		AlbumFullView albumFullView = this.albumViewService.findFullAlbumById(Long.valueOf(albumId));
+		if (null == albumFullView) {
 			System.out.println("album is null");
 			return null; // 返回空的结果
 		}
@@ -308,7 +350,7 @@ public class AlbumController extends BaseController {
 		
 		// 构造data
 		AlbumVo albumVo = new AlbumVo();
-		BeanUtils.copyProperties(albumView, albumVo);
+		BeanUtils.copyProperties(albumFullView, albumVo);
 		DataVo<AlbumVo> albumDataVo = JsonUtils.setData(albumVo.getId(), "album", albumVo);
 		
 		Pageable pageable = PageUtils.build(page, size, sort);
@@ -342,7 +384,7 @@ public class AlbumController extends BaseController {
 		
 		rootVo.setIncluded(includedList);
 		// mata [显示所有的]
-		Map<String, Object> meta =  this.videoViewService.findVideoAndWorkTotal(albumView.getId());
+		Map<String, Object> meta =  this.videoViewService.findVideoAndWorkTotal(albumFullView.getId());
 		
 		rootVo.setMeta(meta);
 		return rootVo;

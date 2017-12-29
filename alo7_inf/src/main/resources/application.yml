@@ -6,6 +6,8 @@ server:
     uri-encoding: UTF-8
 
 spring:
+  profiles:
+      active: dev
   datasource: 
     url: jdbc:mysql://127.0.0.1:3306/alo7_dub
     username: root
@@ -25,7 +27,7 @@ spring:
       ddl-auto: update
       naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
   redis:
-    host: localhost
+    host: 127.0.0.1
     port: 6379
     password: 123qazxsw!@#
     pool:  

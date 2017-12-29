@@ -37,4 +37,18 @@ public abstract class Constant {
     public static final String NO = "no";
     
     public static final String TOKEN = "token";
+    
+	/**
+	 * S3 配置 
+	 */
+	public static String ACCESSKEYID = "AKIAOHY26PYSEKTESD3Q";
+	public static String SECRETKEY = "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";
+	public static String BUCKETNAME = "njfhoddiowm4yjdj.saybot.net";
+	public static String HTTP = "http://";
+	
+	/**
+	 * 
+	 */
+	public static String USER_ID_URL = "http://account-api.dev.saybot.net/api/v1/open/users";
+	public static String USER_TOKEN = "http://account-api.dev.saybot.net/api/v1/users/info";
 }

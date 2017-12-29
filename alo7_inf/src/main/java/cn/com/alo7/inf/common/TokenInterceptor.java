@@ -19,7 +19,10 @@ public class TokenInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		// TODO Auto-generated method stub
+		// 该功能不完善,先让通过
+		if(null == request.getHeader(Constant.TOKEN)){
+			return true;
+		}
 		if(request.getHeader(Constant.TOKEN).equals(redisService.get(Constant.TOKEN))){
 			return true;
 		}

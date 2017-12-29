@@ -1,6 +1,7 @@
 package cn.com.alo7.inf.service;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import cn.com.alo7.inf.entity.AlbumView;
 
@@ -20,6 +21,15 @@ public interface IAlbumViewService {
 	 * @return
 	 */
 	Page<AlbumView> findByAlbumSizeAndType(Integer albumSize, String type);
+	
+	/**
+	 * 专辑翻页查询
+	 * @param pageable
+	 * @param type
+	 * @return
+	 */
+	Page<AlbumView> findByTypeWithPage(Pageable pageable, String type);
+	
 	
 	/**
 	 * 根据专辑id,查找专辑信息

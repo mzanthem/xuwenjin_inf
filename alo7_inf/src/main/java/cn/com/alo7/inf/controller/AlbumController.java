@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import cn.com.alo7.inf.common.Constant;
 import cn.com.alo7.inf.common.utils.JsonUtils;
 import cn.com.alo7.inf.common.utils.PageUtils;
 import cn.com.alo7.inf.entity.AlbumView;
@@ -25,6 +26,7 @@ import cn.com.alo7.inf.entity.WorkFullView;
 import cn.com.alo7.inf.service.IAlbumViewService;
 import cn.com.alo7.inf.service.IVideoViewService;
 import cn.com.alo7.inf.service.IWorkViewService;
+import cn.com.alo7.inf.util.DataVoHelper;
 import cn.com.alo7.inf.vo.AlbumVo;
 import cn.com.alo7.inf.vo.DataVo;
 import cn.com.alo7.inf.vo.RelationshipDataVo;
@@ -139,33 +141,52 @@ public class AlbumController extends BaseController {
 	}
 
 	/**
-	 * A10-查询一般作品专辑清单 -->有问题?
-	 * 翻页的话,翻页条件在哪?
-	 * 视频从哪里获得--作品吗?
+	 * A10-查询一般作品专辑清单 
+	 * 查询全部的专辑、视频、作品
 	 * albums/works?type=commonly&albumSize=albumSize&videoSize=videoSize&sort=sort
 	 * 
-	 * @param albumSize	专辑个数 4-6
-	 * @param videoSize 专辑下显示视频数目  4
+	 * @param albumSize	专辑个数 4-6  按照sort,取专辑列表
+	 * @param videoSize 专辑下显示视频数目  按照sort排序，取专辑下的视频
 	 * @param sort 专辑下作品排序规则
 	 * @return
 	 * @author mazan
 	 */
 	@ApiOperation(value = "A10", notes = "查询一般作品专辑清单", httpMethod = "GET")
 	@RequestMapping(value = "albums/works", params = "type=commonly", method = RequestMethod.GET)
-	public String getCommonlyAlbumWorkList(
+	public Object getCommonlyAlbumWorkList(
 			@RequestParam(value = "type", required = true) String type,
 			@RequestParam(value = "albumSize", required = false, defaultValue = ALBUM_SIZE) Integer albumSize,
 			@RequestParam(value = "videoSize", required = false, defaultValue = VIDEO_SIZE) Integer videoSize,
 			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort) {
 		// TODO
 		//查找一般作品专辑
+		Pageable pageable = PageUtils.build(Constant.PAGE, albumSize, sort);
+		Page<AlbumView> albumPageList = this.albumViewService.findByTypeWithPage(pageable, type);
 		
+		List<DataVo<AlbumVo>> resultList = new ArrayList<>(); //data数组
+		List<DataVo<WorkVo>> includedList = new ArrayList<>(); //include数组
 		
-		Map<String, Object> map = new HashMap<>();
-		map.put("arg1", new Long(1000));
-		map.put("arg2", "Mz");
-
-		return JsonUtils.toJson(map);
+		//为每一个专辑构造data
+		DataVo<AlbumVo> dataVoAlbum;
+		for (AlbumView albumView : albumPageList) {
+			Long albumId = albumView.getId();
+			//封装dataList
+			// 构造album data
+			dataVoAlbum = DataVoHelper.getInstance(albumId, "album", albumView, new AlbumVo());
+			
+			
+			//专辑下视频
+			Page<VideoVo> videoList;
+			
+			//视频下作品
+			
+			//album data 的relationShip
+			
+		}
+		
+		RootVo rootVo = JsonUtils.createRoot();
+		
+		return rootVo;
 	}
 
 	/**
@@ -188,25 +209,20 @@ public class AlbumController extends BaseController {
 			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort,
 			@RequestParam(value = "page", required = false, defaultValue = PAGE) Integer page,
 			@RequestParam(value = "size", required = false) Integer size) {
-		// TODO
-		//根据专辑code查找专辑 【是否唯一?】
+		//根据专辑code查找专辑 【唯一】
 		AlbumView albumView = this.albumViewService.findSpecialAlbumByCode(identifier);
 		if (null == albumView) {
 			System.out.println("album is null  ");
 			return null;
 		}
 		Long albumId = albumView.getId();
-		System.out.println("albumId is " + albumId);
 		// 构造data
-		AlbumVo albumVo = new AlbumVo();
-		BeanUtils.copyProperties(albumView, albumVo);
-		DataVo<AlbumVo> albumDataVo = JsonUtils.setData(albumId, "album", albumVo);
+		DataVo<AlbumVo> albumDataVo = DataVoHelper.getInstance(albumId, "album", albumView, new AlbumVo());
 				
 				
 		//翻页查询
 		Pageable pageable = PageUtils.build(page, size, sort);
 		Page<WorkFullView> workList = this.workViewService.findWorkByAlbumId(2L, pageable);
-		System.out.println(workList.getContent().size());
 		
 		List<Object> includedList = new ArrayList<>();
 		
@@ -214,15 +230,15 @@ public class AlbumController extends BaseController {
 		DataVo<WorkVo> included;
 		
 		for (WorkFullView workFullView : workList) {
+			Long workId = workFullView.getId();
+			
 			// 构建relationships
-			RelationshipDataVo relationshipDataVo = new RelationshipDataVo(workFullView.getId(), "work"); //id,type 最里层
+			RelationshipDataVo relationshipDataVo = new RelationshipDataVo(workId, "work"); //id,type 最里层
 			relationshipVoWork.getData().add(relationshipDataVo);
 			
-			// 构建included
-			WorkVo workVo = new WorkVo();
-			BeanUtils.copyProperties(workFullView, workVo);
-			included = (DataVo<WorkVo>) JsonUtils.setData(workFullView.getId(), "work", workVo);
-			// 构建author信息
+			// 构建included data
+			included = (DataVo<WorkVo>)DataVoHelper.getInstance(workId, "work", workFullView, new WorkVo());
+			// 构建relationshiop author信息
 			RelationshipDataVo relationshipDataVoAuthor = new RelationshipDataVo(1L, "user"); //id,type 最里层
 			RelationshipVo<RelationshipDataVo> relationshipVoAuthor = new RelationshipVo<>(relationshipDataVoAuthor);
 			//album下作者关联
@@ -282,7 +298,6 @@ public class AlbumController extends BaseController {
 			@RequestParam(value = "page", required = false, defaultValue = PAGE) Integer page,
 			@RequestParam(value = "size", required = false, defaultValue = SIZE) Integer size,
 			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort) {
-		// TODO 通用排序
 		// 根据id查找专辑
 		AlbumView albumView = this.albumViewService.findAlbumById(Long.valueOf(albumId));
 		if (null == albumView) {

@@ -38,7 +38,21 @@ public class AlbumViewServiceImpl implements IAlbumViewService {
 		Example<AlbumView> ex = Example.of(albumView, matcher);
 		return albumViewRepository.findAll(ex, pageable);
 	}
+	
+	/**
+	 * 根据类型查找专辑列表
+	 */
+	@Override
+	public Page<AlbumView> findByTypeWithPage(Pageable pageable, String type) {
 
+		// 创建查询条件数据对象
+		AlbumView albumView = new AlbumView();
+		albumView.setType(type);
+		// 创建匹配器
+		ExampleMatcher matcher = ExampleMatcher.matching();
+		Example<AlbumView> ex = Example.of(albumView, matcher);
+		return albumViewRepository.findAll(ex, pageable);
+	}
 	/**
 	 * 根据id查找专辑信息
 	 */

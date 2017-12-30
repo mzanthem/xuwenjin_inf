@@ -41,7 +41,7 @@ public class VideoView extends BaseEntity {
 	private String isPassed;
 	private String status;
 	private String isDisplay;
-	private Integer position;
+	private Long position;
 	/**
 	 * manual,
 	 */
@@ -171,11 +171,11 @@ public class VideoView extends BaseEntity {
 		this.isDisplay = isDisplay;
 	}
 
-	public Integer getPosition() {
+	public Long getPosition() {
 		return position;
 	}
 
-	public void setPosition(Integer position) {
+	public void setPosition(Long position) {
 		this.position = position;
 	}
 

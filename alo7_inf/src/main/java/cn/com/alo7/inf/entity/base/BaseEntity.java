@@ -18,16 +18,34 @@ public class BaseEntity implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * 删除标识  
+	 */
 	private String deleteFlag;
 	
+	/**
+	 * 创建人
+	 */
 	private String createdBy;
 	
+	/**
+	 * 创建时间
+	 */
 	private Timestamp createdAt;
-	
+	 
+	/**
+	 * 更新人
+	 */
 	private String updatedBy;
-	
+	 
+	/**
+	 * 更新时间
+	 */
 	private Timestamp updatedAt;
-	
+	  
+	/**
+	 * 版本号
+	 */
 	private String version;
 
 	public String getDeleteFlag() {

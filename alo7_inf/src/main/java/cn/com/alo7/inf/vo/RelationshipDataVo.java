@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class RelationshipDataVo implements Serializable{
 
 	/**
-	 * UID
+	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
@@ -16,21 +16,21 @@ public class RelationshipDataVo implements Serializable{
 		
 	}
 	
-	public RelationshipDataVo(Long id, String type) {
+	public RelationshipDataVo(String id, String type) {
 		super();
 		this.id = id;
 		this.type = type;
 	}
 
-	private Long id;
+	private String id;
 	
 	private String type;
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

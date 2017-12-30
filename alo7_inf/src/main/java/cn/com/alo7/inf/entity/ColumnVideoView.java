@@ -19,7 +19,7 @@ public class ColumnVideoView extends BaseEntity{
 	/**
 	 * UID
 	 */
-	private static final long serialVersionUID = -1173399585625850222L;
+	private static final long serialVersionUID = -1944257133801444332L;
 	/**
 	 * id
 	 */

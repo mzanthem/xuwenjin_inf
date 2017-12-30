@@ -22,6 +22,6 @@ public class TokenUtils {
 		String token = uuid.toString();
 		token = token.toUpperCase();
 		token = token.replaceAll("-", "");
-		System.out.println(token);
+		System.out.println(uuid+"||"+token);
 	}
 }

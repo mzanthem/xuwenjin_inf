@@ -1,5 +1,8 @@
 package cn.com.alo7.inf.service.impl;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -46,7 +49,7 @@ public class VideoViewServiceImpl implements IVideoViewService {
 		Page<VideoView> pageList = videoViewRepository.findAll(ex, pageable);
 		return pageList;
 	}
-
+	
 	/**
 	 * 根据专辑Id查找视频信息
 	 * 翻页
@@ -65,5 +68,14 @@ public class VideoViewServiceImpl implements IVideoViewService {
 		// 查询分页
 		Page<VideoFullView> pageList = videoFullViewRepository.findAll(ex, pageable);
 		return pageList;
+	}
+
+	/**
+	 * 根据专辑id统计视频数已经视频下作品数
+	 */
+	@Override
+	public Map<String, Object> findVideoAndWorkTotal(Long albumId) {
+		List<Map<String, Object>> queryResult=  videoFullViewRepository.findVideoAndWorkCount(albumId);
+		return queryResult.get(0);
 	}
 }

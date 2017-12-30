@@ -13,7 +13,7 @@ public class JsonUtils {
 		return new RootVo();
 	}
 	
-	public static <T> DataVo<T> setData(Long id,String type,T t){
+	public static <T> DataVo<T> setData(String id,String type,T t){
 		DataVo<T> dataVo = new DataVo<T>();
 		dataVo.setId(id);
 		dataVo.setType(type);
@@ -21,7 +21,7 @@ public class JsonUtils {
 		return dataVo;
 	}
 	
-	public static RelationshipDataVo setRelationshipDataVo(Long id,String type){
+	public static RelationshipDataVo setRelationshipDataVo(String id,String type){
 		RelationshipDataVo relationshipDataVo = new RelationshipDataVo();
 		relationshipDataVo.setId(id);
 		relationshipDataVo.setType(type);

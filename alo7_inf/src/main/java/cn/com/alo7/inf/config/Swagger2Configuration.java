@@ -1,23 +1,31 @@
 package cn.com.alo7.inf.config;
 
-import com.fasterxml.classmate.TypeResolver;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
+
+import com.fasterxml.classmate.TypeResolver;
+
+import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.schema.ModelRef;
+import springfox.documentation.service.Parameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.time.LocalDate;
 
 @Configuration()
 @EnableSwagger2
-@Profile({"dev", "staging"})
+@Profile({"local", "staging"})
 /**
  * see http://springfox.github.io/springfox/docs/current/
  */
@@ -37,6 +45,7 @@ public class Swagger2Configuration {
                 .directModelSubstitute(LocalDate.class,
                         String.class)
                 .genericModelSubstitutes(ResponseEntity.class)
+                .globalOperationParameters(setHeaderToken())
 //                .alternateTypeRules(
 //                        newRule(typeResolver.resolve(DeferredResult.class,
 //                                typeResolver.resolve(ResponseEntity.class, WildcardType.class)),
@@ -97,6 +106,14 @@ public class Swagger2Configuration {
 //                "," /*scope separator*/);
 //    }
 
+    private List<Parameter> setHeaderToken() {
+        ParameterBuilder tokenPar = new ParameterBuilder();
+        List<Parameter> pars = new ArrayList<>();
+        tokenPar.name("accessToken").description("token").modelRef(new ModelRef("string")).parameterType("header").required(false).build();
+        pars.add((Parameter) tokenPar.build());
+        return pars;
+    }
+    
     @Bean
     UiConfiguration uiConfig() {
         return new UiConfiguration(

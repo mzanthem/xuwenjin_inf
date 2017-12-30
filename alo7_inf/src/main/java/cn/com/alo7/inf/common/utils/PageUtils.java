@@ -16,4 +16,40 @@ public class PageUtils {
 		}
 		return new PageRequest(page, size,sort);
 	}
+	
+	
+	//-----------------------------------//
+	/**
+	 * 翻页，无排序
+	 * @param page
+	 * @param size
+	 * @param sort
+	 * @return
+	 */
+	public static Pageable build(Integer page, Integer size) {
+		return new PageRequest(page, size);
+	}
+	/**
+	 * 翻页，单排序降序
+	 * @param page
+	 * @param size
+	 * @param sort
+	 * @return
+	 */
+	public static Pageable build(Integer page, Integer size, String orderField) {
+		return build(page, size, orderField, false);
+	}
+	
+	/**
+	 * 
+	 * @param page
+	 * @param size
+	 * @param orderField
+	 * @param isASC
+	 * @return
+	 */
+	public static Pageable build(Integer page, Integer size, String orderField, boolean isASC) {
+		String orderType = isASC ? "asc" : "desc";
+		return page(page, size, SortUtils.baseSort(orderType, orderField));
+	}
 }

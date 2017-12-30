@@ -3,16 +3,6 @@ package cn.com.alo7.inf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-<<<<<<< HEAD
-import org.springframework.context.annotation.ComponentScan;
-
-@SpringBootApplication
-@ComponentScan(value = "cn.com.alo7.inf")
-public class App 
-{
-    public static void main( String[] args )
-    {
-=======
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
@@ -29,7 +19,6 @@ public class App {
     }
 
     public static void main(String[] args) {
->>>>>>> develop
         SpringApplication.run(App.class, args);
     }
 }

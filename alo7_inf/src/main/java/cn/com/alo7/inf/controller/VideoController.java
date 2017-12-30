@@ -10,16 +10,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import cn.com.alo7.inf.common.Authorization;
 import cn.com.alo7.inf.common.Constant;
+import cn.com.alo7.inf.common.utils.DatetimeUtils;
 import cn.com.alo7.inf.common.utils.JsonUtils;
 import cn.com.alo7.inf.entity.Video;
 import cn.com.alo7.inf.entity.Work;
+import cn.com.alo7.inf.service.IRedisService;
 import cn.com.alo7.inf.service.IVideoService;
 import cn.com.alo7.inf.service.IWorkService;
+import cn.com.alo7.inf.vo.ColumnVo;
 import cn.com.alo7.inf.vo.DataVo;
 import cn.com.alo7.inf.vo.RelationshipDataVo;
 import cn.com.alo7.inf.vo.RelationshipVo;
@@ -31,7 +34,6 @@ import cn.com.alo7.inf.vo.WorkVo;
 /**
  * 视频controller
  * @author mazan
- * 使用@RestController注解后，无需再用@ResponseBody
  */
 @RestController
 public class VideoController extends BaseController {
@@ -64,7 +66,7 @@ public class VideoController extends BaseController {
 		videoVo = new VideoVo();
 		BeanUtils.copyProperties(video, videoVo);
 		
-		dataVo = (DataVo<VideoVo>) JsonUtils.setData(videoVo.getId(), "video", videoVo);
+		dataVo = (DataVo<VideoVo>) JsonUtils.setData(String.valueOf(videoVo.getId()), "video", videoVo);
 		
 		rootVo.setData(dataVo);
 		return rootVo;
@@ -94,27 +96,27 @@ public class VideoController extends BaseController {
 			work.setLikeCount(work.getLikeCountIn()+work.getLikeCountOut()+work.getLikeCountEdit());
 			workVo = new WorkVo();
 			BeanUtils.copyProperties(work, workVo);
-			dataVo = (DataVo<WorkVo>) JsonUtils.setData(work.getId(), "work", workVo);
+			dataVo = (DataVo<WorkVo>) JsonUtils.setData(String.valueOf(work.getId()), "work", workVo);
 			
 			//构建relationships
-			relationships = new HashMap<String,Object>();
+			/*relationships = new HashMap<String,Object>();
 			relationshipDataVo = new RelationshipDataVo(1L,"user");
 			relationshipVo = new RelationshipVo<RelationshipDataVo>();
 			relationshipVo.setData(relationshipDataVo);
 			relationships.put("author", relationshipVo);
 			dataVo.setRelationships(relationships);
-			dataVoList.add(dataVo);
+			dataVoList.add(dataVo);*/
 		}
 		
 		rootVo.setData(dataVoList);
 		
 		//构建included
 		List<UserVo> userList = new ArrayList<UserVo>();
-		userList.add(new UserVo(1L,"Gebhardt","图像url"));
+		userList.add(new UserVo("1","Gebhardt","图像url"));
 		DataVo<UserVo> included = null;
 		List<DataVo<UserVo>> includedList = new ArrayList<DataVo<UserVo>>();
 		for (UserVo userVo : userList) {
-			included = (DataVo<UserVo>) JsonUtils.setData(1L,"user", userVo);
+			included = (DataVo<UserVo>) JsonUtils.setData("1","user", userVo);
 			includedList.add(included);
 		}
 		rootVo.setIncluded(includedList);
@@ -134,8 +136,34 @@ public class VideoController extends BaseController {
 	 * @throws Exception 
 	 */
 	@PostMapping("videos/{videoId}/dub")
-	public String saveUserWork(@PathVariable String videoId,@RequestBody Video video){
+	@Authorization
+	public RootVo saveUserWork(@PathVariable Long videoId,
+			@RequestParam(value = "fileUrl", required = true) String fileUrl,
+			@RequestParam(value = "title", required = true) String title,
+			@RequestParam(value = "type", required = true,defaultValue=Constant.TYPE_VOICE) String type,
+			@RequestParam(value = "status", required = false,defaultValue=Constant.STATUS_UNRELEASED) String status){
+		UserVo userVo = this.getUser();
+		Work work = workService.saveUserWork(videoId, fileUrl, status,userVo);
+		//转换json
+		RootVo rootVo = JsonUtils.createRoot();
+		WorkVo workVo = new WorkVo();
+		BeanUtils.copyProperties(work, workVo);
+		workVo.setCreatedAt(DatetimeUtils.getDatetime(work.getCreatedAt()));
+		workVo.setUpdatedAt(DatetimeUtils.getDatetime(work.getUpdatedAt()));
+		DataVo<WorkVo> dataVo = (DataVo<WorkVo>) JsonUtils.setData(String.valueOf(workVo.getId()), "work", workVo);
 		
-		return "";
+		//构建relationships
+		Map<String,Object> relationships = new HashMap<String,Object>();
+		RelationshipDataVo relationshipDataVo = new RelationshipDataVo(userVo.getId(),"user");
+		RelationshipVo<RelationshipDataVo> relationshipVo = new RelationshipVo<RelationshipDataVo>();
+		relationshipVo.setData(relationshipDataVo);
+		relationships.put("author", relationshipVo);
+		dataVo.setRelationships(relationships);
+		rootVo.setData(dataVo);
+		
+		//构建included
+		DataVo<UserVo> included = (DataVo<UserVo>) JsonUtils.setData(userVo.getId(),"user", userVo);
+		rootVo.setIncluded(included);
+		return rootVo;
 	}
 }

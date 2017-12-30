@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import cn.com.alo7.inf.common.Authorization;
 import cn.com.alo7.inf.common.utils.JsonUtils;
 import cn.com.alo7.inf.entity.Column;
 import cn.com.alo7.inf.entity.ColumnVideoView;
@@ -53,7 +54,7 @@ public class ColumnController extends BaseController {
 		for (Column column : columnList) {
 			columnVo = new ColumnVo();
 			BeanUtils.copyProperties(column, columnVo);
-			dataVo = (DataVo<ColumnVo>) JsonUtils.setData(columnVo.getId(), "column", columnVo);
+			dataVo = (DataVo<ColumnVo>) JsonUtils.setData(String.valueOf(columnVo.getId()), "column", columnVo);
 			dataList.add(dataVo);
 		}
 		rootVo.setData(dataList);
@@ -84,7 +85,7 @@ public class ColumnController extends BaseController {
 		for (ColumnVideoView vColumnVideo : pageList) {
 			videoVo = new VideoVo();
 			BeanUtils.copyProperties(vColumnVideo, videoVo);
-			dataVo = (DataVo<VideoVo>) JsonUtils.setData(vColumnVideo.getId(), "video", videoVo);
+			dataVo = (DataVo<VideoVo>) JsonUtils.setData(String.valueOf(vColumnVideo.getId()), "video", videoVo);
 			dataList.add(dataVo);
 		}
 		rootVo.setData(dataList);

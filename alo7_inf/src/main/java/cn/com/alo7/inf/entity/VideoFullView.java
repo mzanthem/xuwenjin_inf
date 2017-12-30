@@ -17,7 +17,7 @@ import cn.com.alo7.inf.entity.base.BaseEntity;
  *
  */
 @Entity
-@Table(name = "v_a13_video")
+@Table(name = "v_a11_video")
 public class VideoFullView extends BaseEntity {
 	/**
 	 * UID

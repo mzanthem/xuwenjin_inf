@@ -3,19 +3,25 @@ package cn.com.alo7.inf.service;
 import java.util.List;
 
 public interface IRedisService {
-	public boolean set(String key, String value);  
+	boolean set(String key, String value);  
     
-    public String get(String key);  
+    String get(String key);  
       
-    public boolean expire(String key,long expire);  
+    boolean expire(String key,long expire);  
       
-    public <T> boolean setList(String key ,List<T> list);  
+    <T> boolean setList(String key ,List<T> list);  
       
-    public <T> List<T> getList(String key,Class<T> clz);  
+    <T> List<T> getList(String key,Class<T> clz);  
+    
+    <T> boolean setObject(String key, T t);
+    
+    <T> T getObject(String key,Class<T> clz);
       
-    public long lpush(String key,Object obj);  
+    long lpush(String key,Object obj);  
       
-    public long rpush(String key,Object obj);  
+    long rpush(String key,Object obj);  
       
-    public String lpop(String key); 
+    String lpop(String key); 
+    
+    void delete(String key);
 }

@@ -150,7 +150,7 @@ public class AlbumController extends BaseController {
 			Long albumId = albumFullView.getId();
 			//封装dataList
 			// 构造album data
-			albumDataVo = DataVoHelper.getInstance(albumId.toString(), "album", albumFullView, new AlbumVo());
+			albumDataVo = DataVoHelper.getInstance(albumId, "album", albumFullView, new AlbumVo());
 			
 			
 			//?专辑下视频?
@@ -172,7 +172,7 @@ public class AlbumController extends BaseController {
 				relationshipVoWork.getData().add(new RelationshipDataVo(workId.toString(), "work"));
 				
 				// 构建included data
-				included = (DataVo<WorkVo>)DataVoHelper.getInstance(workId.toString(), "work", workFullView, new WorkVo());
+				included = (DataVo<WorkVo>)DataVoHelper.getInstance(workId, "work", workFullView, new WorkVo());
 				// 构建relationshiop author信息
 				RelationshipVo<RelationshipDataVo> relationshipVoAuthor = new RelationshipVo<>(new RelationshipDataVo("1", "user"));
 				//album下作者关联
@@ -189,7 +189,7 @@ public class AlbumController extends BaseController {
 			Long i = 0L;
 			for (Map<String, Object> map : list) {
 				
-				userInclude = JsonUtils.setData((i++)+"", "user", map);
+				userInclude = JsonUtils.setData((i++), "user", map);
 				includedList.add(userInclude);
 			}
 			//album下work关联
@@ -236,7 +236,7 @@ public class AlbumController extends BaseController {
 		}
 		Long albumId = albumFullView.getId();
 		// 构造data
-		DataVo<AlbumVo> albumDataVo = DataVoHelper.getInstance(albumId.toString(), "album", albumFullView, new AlbumVo());
+		DataVo<AlbumVo> albumDataVo = DataVoHelper.getInstance(albumId, "album", albumFullView, new AlbumVo());
 				
 				
 		//翻页查询
@@ -256,7 +256,7 @@ public class AlbumController extends BaseController {
 			relationshipVoWork.getData().add(relationshipDataVo);
 			
 			// 构建included data
-			included = (DataVo<WorkVo>)DataVoHelper.getInstance(workId.toString(), "work", workFullView, new WorkVo());
+			included = (DataVo<WorkVo>)DataVoHelper.getInstance(workId, "work", workFullView, new WorkVo());
 			// 构建relationshiop author信息
 			RelationshipDataVo relationshipDataVoAuthor = new RelationshipDataVo("1", "user"); //id,type 最里层
 			RelationshipVo<RelationshipDataVo> relationshipVoAuthor = new RelationshipVo<>(relationshipDataVoAuthor);
@@ -328,7 +328,7 @@ public class AlbumController extends BaseController {
 		// 构造data
 		AlbumVo albumVo = new AlbumVo();
 		BeanUtils.copyProperties(albumFullView, albumVo);
-		DataVo<AlbumVo> albumDataVo = JsonUtils.setData(albumVo.getId().toString(), "album", albumVo);
+		DataVo<AlbumVo> albumDataVo = JsonUtils.setData(albumVo.getId(), "album", albumVo);
 		
 		Pageable pageable = PageUtils.build(page, size, sort);
 		Page<VideoFullView> videoViewPage = this.videoViewService
@@ -346,7 +346,7 @@ public class AlbumController extends BaseController {
 			// 构建included
 			VideoVo videoVo = new VideoVo();
 			BeanUtils.copyProperties(videoFullView, videoVo);
-			included = (DataVo<VideoVo>) JsonUtils.setData(videoFullView.getId().toString(), "video", videoVo);
+			included = (DataVo<VideoVo>) JsonUtils.setData(videoFullView.getId(), "video", videoVo);
 			includedList.add(included);
 			
 		}

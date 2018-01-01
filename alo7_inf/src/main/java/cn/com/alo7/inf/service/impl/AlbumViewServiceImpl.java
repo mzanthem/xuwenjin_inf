@@ -31,16 +31,17 @@ public class AlbumViewServiceImpl implements IAlbumViewService {
 	private AlbumFullViewRepository albumFullViewRepository;
 	
 	@Override
-	public Page<AlbumView> findByAlbumSizeAndType(Integer albumSize, String type) {
+	public Page<AlbumView> findByAlbumSizeAndSpecialType(Integer albumSize, String type) {
 		Pageable pageable = PageUtils.page(null, albumSize, null);
 
 		// 创建查询条件数据对象
 		AlbumView albumView = new AlbumView();
-		albumView.setType(type);
+		albumView.setSpecialType(type);
 
 		// 创建匹配器
 		ExampleMatcher matcher = ExampleMatcher.matching();
 		Example<AlbumView> ex = Example.of(albumView, matcher);
+		
 		return albumViewRepository.findAll(ex, pageable);
 	}
 	
@@ -83,5 +84,4 @@ public class AlbumViewServiceImpl implements IAlbumViewService {
 	public AlbumFullView findFullAlbumById(Long id) {
 		return albumFullViewRepository.findOne(id);
 	}
-
 }

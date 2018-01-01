@@ -62,7 +62,7 @@ public class AlbumView extends BaseEntity{
 	private String description;
 	
 	private String status;
-	private Integer position;
+	private Long position;
 	public Long getId() {
 		return id;
 	}
@@ -123,10 +123,10 @@ public class AlbumView extends BaseEntity{
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public Integer getPosition() {
+	public Long getPosition() {
 		return position;
 	}
-	public void setPosition(Integer position) {
+	public void setPosition(Long position) {
 		this.position = position;
 	}
 }

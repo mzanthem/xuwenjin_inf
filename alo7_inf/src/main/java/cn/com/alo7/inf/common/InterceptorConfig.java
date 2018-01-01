@@ -2,6 +2,7 @@ package cn.com.alo7.inf.common;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -15,6 +16,7 @@ public class InterceptorConfig extends WebMvcConfigurerAdapter{
 	
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(tokenInterceptor()).addPathPatterns("/**");
+		InterceptorRegistration interceptorRegistration = registry.addInterceptor(tokenInterceptor());
+		interceptorRegistration.addPathPatterns("/**");
     }
 }

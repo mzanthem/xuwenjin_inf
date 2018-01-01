@@ -1,5 +1,15 @@
 package cn.com.alo7.inf.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import cn.com.alo7.inf.common.Constant;
+import cn.com.alo7.inf.service.IRedisService;
+import cn.com.alo7.inf.vo.UserVo;
+
 /**
  * 通用controller
  * @author mazan
@@ -9,31 +19,29 @@ public class BaseController {
 	//默认值
 	protected static final String PAGE = "0";
 	protected static final String SIZE = "15";
+	protected static final String SORT = "manual";
+	protected static final String ALBUM_SIZE = "4";
+	protected static final String VIDEO_SIZE = "4";
 	
 	protected static final String SORT_MANUAL = "manual";
 	protected static final String SORT_RELEASED_TIME = "releasedTime";
 	protected static final String SORT_HOT = "hot";
 	
-	protected static final String ALBUM_SIZE = "4";
-	protected static final String VIDEO_SIZE = "4";
-	
 	protected static final String START = "1";
 	protected static final String END = "99999999";
+	@Autowired
+	private IRedisService redisService;
+	/**
+	 * 得到request对象
+	 */
+	public HttpServletRequest getRequest() {
+		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();	
+		return request;
+	}
 	
-//	private static Map<String, String> sortMap = new HashMap<>();
-//	
-//	private static final String MANUAL_POSITION = "position";
-//	private static final String DATE_UPDATED_AT = "updated_at";
-//	private static final String HOT_COUNT = "count";
+	public UserVo getUser(){
+		String accessToken =  this.getRequest().getHeader(Constant.ACCESS_TOKEN);
+		return redisService.getObject(accessToken, UserVo.class);
+	}
 	
-//	/**
-//	 * 默认构造函数
-//	 */
-//	public BaseController() {
-//		sortMap.put(SORT_MANUAL, MANUAL_POSITION);
-//		sortMap.put(SORT_RELEASED_TIME, DATE_UPDATED_AT);
-//		sortMap.put(SORT_HOT, HOT_COUNT);
-//	}
-	
-
 }

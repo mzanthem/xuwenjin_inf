@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Service;
 
+import cn.com.alo7.inf.common.utils.JsonUtils;
 import cn.com.alo7.inf.service.IRedisService;
 
 /**
@@ -65,6 +66,21 @@ public class RedisServiceImpl implements IRedisService
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public <T> boolean setObject(String key, T t) {
+		String value = JsonUtils.toJson(t);
+		return this.set(key, value);
+	}
+
+	@Override
+	public <T> T getObject(String key, Class<T> clz) {
+		String json = this.get(key);
+		if(null != json && !"".equals(json)){
+			return JsonUtils.parseJson(json, clz);
+		}
+		return null;
+	} 
 
 	@Override
 	public long lpush(String key, Object obj) {
@@ -82,6 +98,10 @@ public class RedisServiceImpl implements IRedisService
 	public String lpop(String key) {
 		// TODO Auto-generated method stub
 		return null;
-	}  
-     
+	}
+
+	@Override
+	public void delete(String key) {
+		redisTemplate.delete(key);
+	}
 }

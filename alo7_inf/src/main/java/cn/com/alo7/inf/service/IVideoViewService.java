@@ -16,7 +16,6 @@ import cn.com.alo7.inf.entity.VideoView;
 public interface IVideoViewService {
 	
 	Page<VideoView> findByAlbumIdAndVideoSizeAndSort(Long albumId, Integer videoSize, String sort);
-	
 	/**
 	 * 根据专辑id查询视频翻页信息
 	 * @param albumId

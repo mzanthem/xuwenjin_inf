@@ -49,7 +49,7 @@ public class VideoViewServiceImpl implements IVideoViewService {
 		Page<VideoView> pageList = videoViewRepository.findAll(ex, pageable);
 		return pageList;
 	}
-
+	
 	/**
 	 * 根据专辑Id查找视频信息
 	 * 翻页

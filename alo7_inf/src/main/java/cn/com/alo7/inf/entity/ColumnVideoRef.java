@@ -53,12 +53,8 @@ public class ColumnVideoRef extends BaseEntity{
 		this.id = id;
 	}
 
-	public long getPosition() {
+	public Long getPosition() {
 		return position;
-	}
-
-	public void setPosition(long position) {
-		this.position = position;
 	}
 
 	public Column getColumn() {

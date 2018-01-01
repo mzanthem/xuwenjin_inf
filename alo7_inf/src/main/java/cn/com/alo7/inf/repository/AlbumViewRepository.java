@@ -12,5 +12,4 @@ import cn.com.alo7.inf.entity.AlbumView;
  */
 @Repository
 public interface AlbumViewRepository extends JpaRepository<AlbumView, Long>{
-	
 }

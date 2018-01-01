@@ -21,10 +21,8 @@ public interface IAlbumViewService {
 	 * @param type
 	 * @return
 	 */
-	Page<AlbumView> findByAlbumSizeAndType(Integer albumSize, String type);
-	
-	
-	
+	Page<AlbumView> findByAlbumSizeAndSpecialType(Integer albumSize, String type);
+
 	/**
 	 * 根据专辑id,查找专辑信息
 	 * @param id

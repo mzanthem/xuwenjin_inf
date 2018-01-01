@@ -195,7 +195,7 @@ public class Video extends BaseEntity{
 	public void setIsDisplay(String isDisplay) {
 		this.isDisplay = isDisplay;
 	}
-	public long getPosition() {
+	public Long getPosition() {
 		return position;
 	}
 	public void setPosition(Long position) {

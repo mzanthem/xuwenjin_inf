@@ -13,17 +13,17 @@ public class JsonUtils {
 		return new RootVo();
 	}
 	
-	public static <T> DataVo<T> setData(Long id,String type,T t){
+	public static <T> DataVo<T> setData(Object id,String type,T t){
 		DataVo<T> dataVo = new DataVo<T>();
-		dataVo.setId(id);
+		dataVo.setId((String)id);
 		dataVo.setType(type);
 		dataVo.setAttributes(t);
 		return dataVo;
 	}
 	
-	public static RelationshipDataVo setRelationshipDataVo(Long id,String type){
+	public static RelationshipDataVo setRelationshipDataVo(Object id,String type){
 		RelationshipDataVo relationshipDataVo = new RelationshipDataVo();
-		relationshipDataVo.setId(id);
+		relationshipDataVo.setId((String)id);
 		relationshipDataVo.setType(type);
 		return relationshipDataVo;
 	}

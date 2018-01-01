@@ -60,4 +60,12 @@ public class WorkViewServiceImpl implements IWorkViewService {
 		return result;
 	}
 
+	/**
+	 * 根据id查找作品
+	 */
+	@Override
+	public WorkFullView findById(Long workId) {
+		return this.workFullViewRepository.findOne(workId);
+	}
+
 }

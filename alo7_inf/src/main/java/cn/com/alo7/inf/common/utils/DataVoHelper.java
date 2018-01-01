@@ -18,10 +18,11 @@ import cn.com.alo7.inf.vo.DataVo;
 public class DataVoHelper {
 
 	/**
-	 * 构造dateVo<T>
+	 * 构造dataVo<T>
 	 * @param id
 	 * @param type
-	 * @param t
+	 * @param E source
+	 * @param t target
 	 * @return
 	 */
 	public static <T> DataVo<T> getInstance(Object id, String type, Object E, T t) {
@@ -29,4 +30,17 @@ public class DataVoHelper {
 		DataVo<T> dataVo = JsonUtils.setData(id.toString(), type, t);
 		return dataVo;
 	}
+	
+	/**
+	 * 构造dataVo
+	 * @param id
+	 * @param type
+	 * @param t 目标
+	 * @return
+	 */
+	public static <T> DataVo<T> getInstance(Object id, String type, T t) {
+		DataVo<T> dataVo = JsonUtils.setData(id.toString(), type, t);
+		return dataVo;
+	}
+	
 }

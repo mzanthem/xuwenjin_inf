@@ -13,7 +13,12 @@ import org.springframework.data.domain.Pageable;
 import cn.com.alo7.inf.entity.WorkFullView;
 public interface IWorkViewService {
 	
-	
+	/**
+	 * 根据作品id查找作品
+	 * @param workId
+	 * @return
+	 */
+	WorkFullView findById(Long workId);
 	/**
 	 * 通过视频Id查询视频对应所有的作品
 	 * @param id

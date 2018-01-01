@@ -26,7 +26,7 @@ public class DataVoHelper {
 	 */
 	public static <T> DataVo<T> getInstance(Object id, String type, Object E, T t) {
 		BeanUtils.copyProperties(E, t);
-		DataVo<T> dataVo = JsonUtils.setData((String)id, type, t);
+		DataVo<T> dataVo = JsonUtils.setData(id.toString(), type, t);
 		return dataVo;
 	}
 }

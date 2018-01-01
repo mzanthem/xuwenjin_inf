@@ -52,4 +52,15 @@ public class WorkController extends BaseController {
 		
 		return rootVo;
 	}
+	
+	
+	/**
+	 * TODO 
+	 * A19
+	 * @return
+	 */
+	public Object getWork() {
+		
+		return null;
+	}
 }

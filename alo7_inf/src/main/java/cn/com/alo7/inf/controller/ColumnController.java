@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import cn.com.alo7.inf.common.Authorization;
 import cn.com.alo7.inf.common.utils.JsonUtils;
 import cn.com.alo7.inf.entity.Column;
 import cn.com.alo7.inf.entity.ColumnVideoView;

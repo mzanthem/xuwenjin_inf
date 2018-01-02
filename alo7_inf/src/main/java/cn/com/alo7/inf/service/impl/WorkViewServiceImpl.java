@@ -42,6 +42,22 @@ public class WorkViewServiceImpl implements IWorkViewService {
 		Page<WorkFullView> pageList = this.workFullViewRepository.findAll(ex, pageable);
 		return pageList;
 	}
+	/**
+	 * 查找用户作品
+	 */
+	@Override
+	public Page<WorkFullView> findWorkByUserId(String userId, Pageable pageable) {
+		// 创建查询信息
+		WorkFullView wfv = new WorkFullView();
+		wfv.setUuid(userId);
+		// 创建匹配器
+		ExampleMatcher matcher = ExampleMatcher.matching();
+		Example<WorkFullView> ex = Example.of(wfv, matcher);
+
+		// 查询分页
+		Page<WorkFullView> pageList = this.workFullViewRepository.findAll(ex, pageable);
+		return pageList;
+	}
 
 	/**
 	 * 作品总数
@@ -52,6 +68,23 @@ public class WorkViewServiceImpl implements IWorkViewService {
 		List<Map<String, Object>> list = this.workFullViewRepository.findTotalWorkNum(albumId);
 		if (list.isEmpty()) {
 			result.put("albumWorkNum", 0);
+		} else {
+			result = list.get(0);
+		}
+		
+		
+		return result;
+	}
+	
+	/**
+	 * 作品总数
+	 */
+	@Override
+	public Map<String, Object> findWorkTotalbyUserId(String userId) {
+		Map<String, Object> result = new HashMap<>();
+		List<Map<String, Object>> list = this.workFullViewRepository.findTotalWorkNumbyUserId(userId);
+		if (list.isEmpty()) {
+			result.put("workNum", 0);
 		} else {
 			result = list.get(0);
 		}

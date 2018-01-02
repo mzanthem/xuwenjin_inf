@@ -22,4 +22,13 @@ public interface WorkFullViewRepository extends JpaRepository<WorkFullView, Long
 	 */
 	@Query(value = "select count(vaw.id)  as albumWorkNum from WorkFullView vaw where vaw.albumId = ?1")
 	List<Map<String, Object>> findTotalWorkNum(Long albumId);
+	
+	
+	/**
+	 * 统计专辑下作品的总数
+	 * @param albumId
+	 * @return
+	 */
+	@Query(value = "select count(vaw.id)  as workNum from WorkFullView vaw where vaw.uuid = ?1")
+	List<Map<String, Object>> findTotalWorkNumbyUserId(String uuid);
 }

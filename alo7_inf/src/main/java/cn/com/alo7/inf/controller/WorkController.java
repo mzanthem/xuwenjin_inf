@@ -66,7 +66,6 @@ public class WorkController extends BaseController {
 		return rootVo;
 	}
 	
-	
 	/**
 	 * TODO 日期转换问题
 	 * A19-获取一个作品的所有信息

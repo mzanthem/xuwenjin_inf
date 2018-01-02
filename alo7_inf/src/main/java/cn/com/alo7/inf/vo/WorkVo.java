@@ -1,6 +1,5 @@
 package cn.com.alo7.inf.vo;
 
-import cn.com.alo7.inf.entity.base.BaseEntity;
 import cn.com.alo7.inf.vo.base.BaseVo;
 
 public class WorkVo extends BaseVo{

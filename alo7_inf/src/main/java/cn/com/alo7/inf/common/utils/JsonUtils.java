@@ -15,7 +15,7 @@ public class JsonUtils {
 	
 	public static <T> DataVo<T> setData(Object id,String type,T t){
 		DataVo<T> dataVo = new DataVo<T>();
-		dataVo.setId((String)id);
+		dataVo.setId(id.toString());
 		dataVo.setType(type);
 		dataVo.setAttributes(t);
 		return dataVo;
@@ -23,7 +23,7 @@ public class JsonUtils {
 	
 	public static RelationshipDataVo setRelationshipDataVo(Object id,String type){
 		RelationshipDataVo relationshipDataVo = new RelationshipDataVo();
-		relationshipDataVo.setId((String)id);
+		relationshipDataVo.setId(id.toString());
 		relationshipDataVo.setType(type);
 		return relationshipDataVo;
 	}

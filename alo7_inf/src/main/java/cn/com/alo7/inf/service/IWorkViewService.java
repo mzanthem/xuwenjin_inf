@@ -29,10 +29,11 @@ public interface IWorkViewService {
 	/**
 	 * 通过用户id查找作品
 	 * @param uuid
+	 * @param isCurrentUser 
 	 * @param pageable
 	 * @return
 	 */
-	Page<WorkFullView> findWorkByUserId(String uuid, Pageable pageable);
+	Page<WorkFullView> findWorkByUserId(String uuid, boolean isCurrentUser, Pageable pageable);
 	/**
 	 * 根据专辑id查询视频总数&视频下作品总数
 	 * @param albumId
@@ -46,4 +47,12 @@ public interface IWorkViewService {
 	 * @return
 	 */
 	Map<String, Object> findWorkTotalbyUserId(String userId);
+	
+	/**
+	 * 查询用户作品排名
+	 * @param type
+	 * @param pageable
+	 * @return
+	 */
+	Page<WorkFullView> findWorkRank(String type, Pageable pageable);
 }

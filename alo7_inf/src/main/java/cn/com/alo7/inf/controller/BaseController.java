@@ -44,4 +44,12 @@ public class BaseController {
 		return redisService.getObject(accessToken, UserVo.class);
 	}
 	
+	
+	public boolean checkCurrentUser(String uuid) {
+		// TODO 判断当前用户
+		if ("1111".equals(uuid)) {
+			return true;
+		}
+		return false;
+	}
 }

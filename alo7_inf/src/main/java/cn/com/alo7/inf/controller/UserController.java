@@ -108,8 +108,12 @@ public class UserController extends BaseController {
 			@RequestParam(value="size", required=false, defaultValue = SIZE) Integer size
 			) {
 		
+		//判断当前用户
+		boolean isCurrentUser = checkCurrentUser(uuid);
+		
+		
 		Pageable pageable = PageUtils.build(page, size);
-		Page<WorkFullView> result = this.workViewService.findWorkByUserId(uuid, pageable);
+		Page<WorkFullView> result = this.workViewService.findWorkByUserId(uuid, isCurrentUser, pageable);
 		
 		
 		List<DataVo<WorkVo>> dataList = new ArrayList<>();
@@ -146,6 +150,8 @@ public class UserController extends BaseController {
 		return root;
 	}
 	
+
+
 	/**
 	 * 模拟作品作者
 	 * @return

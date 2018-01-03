@@ -227,7 +227,7 @@ public class AlbumController extends BaseController {
 			@RequestParam(value = "identifier", required = true) String identifier,
 			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort,
 			@RequestParam(value = "page", required = false, defaultValue = PAGE) Integer page,
-			@RequestParam(value = "size", required = false) Integer size) {
+			@RequestParam(value = "size", required = false, defaultValue = SIZE) Integer size) {
 		//根据专辑code查找专辑 【唯一】
 		AlbumFullView albumFullView = this.albumViewService.findSpecialAlbumByCode(identifier);
 		if (null == albumFullView) {

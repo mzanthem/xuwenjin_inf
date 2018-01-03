@@ -5,14 +5,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cn.com.alo7.inf.common.utils.DataVoHelper;
 import cn.com.alo7.inf.common.utils.JsonUtils;
+import cn.com.alo7.inf.common.utils.PageUtils;
 import cn.com.alo7.inf.entity.Video;
 import cn.com.alo7.inf.entity.Work;
 import cn.com.alo7.inf.entity.WorkFullView;
@@ -113,7 +119,40 @@ public class WorkController extends BaseController {
 		return rootVo;
 	}
 	
-	
+	/**
+	 * A16-查询作品排行榜
+	 * works/rank?type=type&page=page&size=size
+	 * @return
+	 */
+	@ApiOperation(value = "A16", notes = "查询作品排行榜", httpMethod = "GET")
+	@RequestMapping(value = "works/rank", method = RequestMethod.GET)
+	public Object getWorkRank(@RequestParam(value = "type", required = true) String type,
+			@RequestParam(value = "page", required = false, defaultValue = PAGE) Integer page,
+			@RequestParam(value = "size", required = false, defaultValue = SIZE) Integer size) {
+		
+		checkType(type);
+		
+		Pageable pageable = PageUtils.build(page, size);
+		
+		Page<WorkFullView> result = this.workViewService.findWorkRank(type, pageable);
+		//TODO 
+		List<WorkVo> list = new ArrayList<>();
+		for (WorkFullView view : result) {
+			WorkVo vo = new WorkVo();
+			BeanUtils.copyProperties(view, vo);
+			list.add(vo);
+		}
+		return list;
+	}
+	/**
+	 * 检查type参数
+	 */
+	private void checkType(String type) {
+		if (!"total".equals(type) && !"week".equals(type)) {
+			throw new RuntimeException("type[" + type + "] is not support");
+		}
+	}
+
 	/**
 	 * 模拟作品作者
 	 * @return

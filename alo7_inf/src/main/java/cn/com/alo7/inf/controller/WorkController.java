@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import cn.com.alo7.inf.common.utils.DataVoHelper;
 import cn.com.alo7.inf.common.utils.JsonUtils;
 import cn.com.alo7.inf.common.utils.PageUtils;
+import cn.com.alo7.inf.common.utils.RelationShipVoHelper;
 import cn.com.alo7.inf.entity.Video;
 import cn.com.alo7.inf.entity.Work;
 import cn.com.alo7.inf.entity.WorkFullView;
@@ -26,6 +27,7 @@ import cn.com.alo7.inf.service.IWorkService;
 import cn.com.alo7.inf.service.IWorkViewService;
 import cn.com.alo7.inf.vo.DataVo;
 import cn.com.alo7.inf.vo.RelationshipDataVo;
+import cn.com.alo7.inf.vo.RelationshipVo;
 import cn.com.alo7.inf.vo.RootVo;
 import cn.com.alo7.inf.vo.VideoVo;
 import cn.com.alo7.inf.vo.WorkVo;
@@ -136,13 +138,32 @@ public class WorkController extends BaseController {
 		
 		Page<WorkFullView> result = this.workViewService.findWorkRank(type, pageable);
 		//TODO 
-		List<WorkVo> list = new ArrayList<>();
+		List<DataVo<WorkVo>> dataList = new ArrayList<>();
+		DataVo<WorkVo> data;
+		
+		List<DataVo<?>> includeList = new ArrayList<>();
+		DataVo<?> includeUser;
 		for (WorkFullView view : result) {
-			WorkVo vo = new WorkVo();
-			BeanUtils.copyProperties(view, vo);
-			list.add(vo);
+			data = DataVoHelper.getInstance(view.getId(), "work", view, new WorkVo());
+			
+			String uuid = view.getUuid();
+			
+			RelationshipVo<RelationshipDataVo> relationAuthor = RelationShipVoHelper.getInstance(uuid, "user");
+			Map<String, Object> relationships = new HashMap<>();
+			relationships.put("author", relationAuthor);
+			data.setRelationships(relationships);
+			dataList.add(data);
+			
+			
+			includeUser = DataVoHelper.getInstance(uuid, "user", this.getMockUserById(uuid)); //查询user信息
+			includeList.add(includeUser);
 		}
-		return list;
+		
+		RootVo rootVo = JsonUtils.createRoot();
+		rootVo.setData(dataList);
+		rootVo.setIncluded(includeList);
+		
+		return rootVo;
 	}
 	/**
 	 * 检查type参数
@@ -167,4 +188,13 @@ public class WorkController extends BaseController {
 		return list;
 		
 	}
+	
+	private Map<String, Object> getMockUserById(String uuid) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("avatarUrl", "图像Url");
+		map.put("name", "Gebhardt");
+		
+		return map;
+	}
+	
 }

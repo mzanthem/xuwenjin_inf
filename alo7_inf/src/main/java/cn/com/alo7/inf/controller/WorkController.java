@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +26,6 @@ import cn.com.alo7.inf.service.IWorkService;
 import cn.com.alo7.inf.service.IWorkViewService;
 import cn.com.alo7.inf.vo.DataVo;
 import cn.com.alo7.inf.vo.RelationshipDataVo;
-import cn.com.alo7.inf.vo.RelationshipVo;
 import cn.com.alo7.inf.vo.RootVo;
 import cn.com.alo7.inf.vo.VideoVo;
 import cn.com.alo7.inf.vo.WorkVo;
@@ -96,10 +94,9 @@ public class WorkController extends BaseController {
 		// videoData
 		Video video = workFull.getVideo();
 		RelationshipDataVo relationshipVideo = new RelationshipDataVo(video.getId().toString(), "video");
-		// authorData
-		List<Map<String, Object>> userList = this.mockUserList();
-		Map<String, Object> user = userList.get(0);
-		RelationshipDataVo relationshipAuthor = new RelationshipDataVo(workFull.getUuid(), "user");
+		
+		String uuid = workFull.getUuid();
+		RelationshipDataVo relationshipAuthor = new RelationshipDataVo(uuid, "user");
 		
 		//构建data-relationships
 		Map<String, Object> relationships = new HashMap<>();
@@ -110,14 +107,14 @@ public class WorkController extends BaseController {
 		//构建included
 		List<DataVo<?>> includedList = new ArrayList<>();
 		DataVo<VideoVo> includeVideo = DataVoHelper.getInstance(video.getId(), "video", video, new VideoVo());
-		DataVo<Map<String, Object>> includeUser = DataVoHelper.getInstance(workFull.getUuid(), "user", user);
 		includedList.add(includeVideo);
+		//TODO 获取用户信息
+		Map<String, Object> user = getMockUserById(uuid);
+		DataVo<Map<String, Object>> includeUser = DataVoHelper.getInstance(uuid, "user", user);
 		includedList.add(includeUser);
 		
 		//构建rootVo
-		RootVo rootVo = JsonUtils.createRoot();
-		rootVo.setData(dataVoWork);
-		rootVo.setIncluded(includedList);
+		RootVo rootVo = JsonUtils.createRoot(dataVoWork, includedList);
 		return rootVo;
 	}
 	
@@ -135,9 +132,8 @@ public class WorkController extends BaseController {
 		checkType(type);
 		
 		Pageable pageable = PageUtils.build(page, size);
-		
 		Page<WorkFullView> result = this.workViewService.findWorkRank(type, pageable);
-		//TODO 
+
 		List<DataVo<WorkVo>> dataList = new ArrayList<>();
 		DataVo<WorkVo> data;
 		
@@ -147,22 +143,14 @@ public class WorkController extends BaseController {
 			data = DataVoHelper.getInstance(view.getId(), "work", view, new WorkVo());
 			
 			String uuid = view.getUuid();
-			
-			RelationshipVo<RelationshipDataVo> relationAuthor = RelationShipVoHelper.getInstance(uuid, "user");
-			Map<String, Object> relationships = new HashMap<>();
-			relationships.put("author", relationAuthor);
-			data.setRelationships(relationships);
+			data.setRelationships(RelationShipVoHelper.buildRelationships("author", uuid, "user"));
 			dataList.add(data);
-			
 			
 			includeUser = DataVoHelper.getInstance(uuid, "user", this.getMockUserById(uuid)); //查询user信息
 			includeList.add(includeUser);
 		}
 		
-		RootVo rootVo = JsonUtils.createRoot();
-		rootVo.setData(dataList);
-		rootVo.setIncluded(includeList);
-		
+		RootVo rootVo = JsonUtils.createRoot(dataList, includeList);
 		return rootVo;
 	}
 	/**
@@ -174,23 +162,10 @@ public class WorkController extends BaseController {
 		}
 	}
 
-	/**
-	 * 模拟作品作者
-	 * @return
-	 */ 
-	private List<Map<String, Object>> mockUserList() {
-		Map<String, Object> map = new HashMap<>();
-		map.put("avatarUrl", "图像Url");
-		map.put("name", "Gebhardt");
-		
-		List<Map<String, Object>> list = new ArrayList<>();
-		list.add(map);
-		return list;
-		
-	}
 	
 	private Map<String, Object> getMockUserById(String uuid) {
 		Map<String, Object> map = new HashMap<>();
+		map.put("id", uuid);
 		map.put("avatarUrl", "图像Url");
 		map.put("name", "Gebhardt");
 		

@@ -25,10 +25,17 @@ public abstract class Constant {
     public static final String SORT_HOT = "hot";
 
     /**
-     * 专辑类型 TODO 
+     * 专辑类型 1:视频 2:作品
      */
-    public static final String ALBUM_TYPE_COMMON = "1";
-    public static final String ALBUM_TYPE_SPECIAL = "2";
+    public static final String ALBUM_TYPE_VIDEO = "1";
+    public static final String ALBUM_TYPE_WORK = "2";
+    
+    /**
+     * 专辑类型 1:视频 2:作品
+     */
+    public static final String ALBUM_SPECIAL_TYPE_COMMON = "1";
+    public static final String ALBUM_SPECIAL_TYPE_SPECIAL = "2";
+    
     /**
      * 上架、下架状态
      */

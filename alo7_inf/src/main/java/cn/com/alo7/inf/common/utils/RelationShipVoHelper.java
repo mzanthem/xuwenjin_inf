@@ -11,6 +11,9 @@ package cn.com.alo7.inf.common.utils;
  * @author mazan
  */
 
+import java.util.HashMap;
+import java.util.Map;
+
 import cn.com.alo7.inf.vo.RelationshipDataVo;
 import cn.com.alo7.inf.vo.RelationshipListVo;
 import cn.com.alo7.inf.vo.RelationshipVo;
@@ -39,6 +42,47 @@ public class RelationShipVoHelper {
 		RelationshipListVo<RelationshipDataVo> relationshipList = new RelationshipListVo<RelationshipDataVo>();
 		relationshipList.getData().add(data);
 		return relationshipList;
+	}
+	
+	
+	
+	/**
+	 * 构造relationShip
+	 * @param key
+	 * @param id
+	 * @param type
+	 * @return
+	 */
+	public static Map<String, Object> buildRelationships(String key, String id, String type) {
+		
+		Map<String, Object> relationships = new HashMap<>();
+		relationships.put(key, getInstance(id, type));
+		return relationships;
+	}
+	/**
+	 * 构造relationShip
+	 * @param key
+	 * @param id
+	 * @param type
+	 * @return
+	 */
+	public static Map<String, Object> buildRelationships(String key, RelationshipVo<?> relationship) {
+		Map<String, Object> relationships = new HashMap<>();
+		relationships.put(key, relationship);
+		return relationships;
+	}
+	
+	/**
+	 * 构造relationShip --List
+	 * @param key
+	 * @param id
+	 * @param type
+	 * @return
+	 */
+	public static Map<String, Object> buildRelationships(String key, RelationshipListVo<?> relationshipList) {
+		Map<String, Object> relationships = new HashMap<>();
+		relationships.put(key, relationshipList);
+		return relationships;
 	}
 	
 	

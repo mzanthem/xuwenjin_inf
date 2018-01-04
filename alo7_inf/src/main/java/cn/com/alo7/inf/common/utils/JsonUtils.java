@@ -1,5 +1,7 @@
 package cn.com.alo7.inf.common.utils;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -12,6 +14,23 @@ public class JsonUtils {
 	public static RootVo createRoot(){
 		return new RootVo();
 	}
+	
+	public static RootVo createRoot(Object data, Object included) {
+		RootVo rootVo = new RootVo();
+		rootVo.setData(data);
+		rootVo.setIncluded(included);
+		return rootVo;
+	}
+	
+	public static RootVo createRoot(Object data, Object included, Map<String,Object> meta) {
+		RootVo rootVo = new RootVo();
+		rootVo.setData(data);
+		rootVo.setIncluded(included);
+		rootVo.setMeta(meta);
+		return rootVo;
+	}
+	
+	
 	
 	public static <T> DataVo<T> setData(Object id,String type,T t){
 		DataVo<T> dataVo = new DataVo<T>();

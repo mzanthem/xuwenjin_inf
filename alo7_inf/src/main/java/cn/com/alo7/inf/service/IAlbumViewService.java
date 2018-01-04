@@ -39,6 +39,12 @@ public interface IAlbumViewService {
 	 */
 	AlbumFullView findFullAlbumById(Long id);
 	/**
+	 * 查找上架专辑
+	 * @param id
+	 * @return
+	 */
+	AlbumFullView findFullAlbumByIdAndStatus(Long id, String status);
+	/**
 	 * 根据专辑code,查找特殊专辑
 	 * @param identifier
 	 * @return
@@ -46,11 +52,12 @@ public interface IAlbumViewService {
 	AlbumFullView findSpecialAlbumByCode(String identifier);
 	
 	/**
-	 * 专辑翻页查询
+	 * 查询专辑
 	 * @param pageable
-	 * @param type
+	 * @param type			null /1.视频  /2.作品
+	 * @param specialType   null /1.一般  /2.特殊
 	 * @return
 	 */
-	Page<AlbumFullView> findByTypeWithPage(Pageable pageable, String type);
+	Page<AlbumFullView> findPageByTypeAndSpecialType(Pageable pageable, String type, String specialType);
 	
 }

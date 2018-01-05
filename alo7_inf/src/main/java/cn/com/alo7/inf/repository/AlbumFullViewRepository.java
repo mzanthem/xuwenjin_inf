@@ -13,7 +13,13 @@ import cn.com.alo7.inf.entity.AlbumFullView;
 @Repository
 public interface AlbumFullViewRepository extends JpaRepository<AlbumFullView, Long>{
 	
-	
+	/**
+	 * 根据专辑和上架状态查询
+	 * @param id
+	 * @param status
+	 * @return
+	 */
+	AlbumFullView findByIdAndStatus(Long id, String status);
 	/**
 	 * 根据类型和专辑code查找特殊专辑信息
 	 * @param albumTypeSpecial

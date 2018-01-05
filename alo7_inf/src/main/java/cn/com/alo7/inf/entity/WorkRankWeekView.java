@@ -8,7 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import cn.com.alo7.inf.entity.base.BaseEntity;
 
 /**
  * 作品视图
@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
  */
 @Entity
 @Table(name = "v_a16_rank_weekly")
-public class WorkRankWeekView {
+public class WorkRankWeekView extends BaseEntity {
 	/**
 	 * UID
 	 */

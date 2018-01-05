@@ -49,7 +49,7 @@ public class RelationshipListVo<T> implements Serializable{
 		this.data = data;
 	}
 	
-	public void setData(T t) {
+	public void addData(T t) {
 		if (null == this.data) {
 			this.data = new ArrayList<>();
 		}

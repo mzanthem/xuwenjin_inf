@@ -111,21 +111,15 @@ public class UserController extends BaseController {
 		//判断当前用户
 		boolean isCurrentUser = checkCurrentUser(uuid);
 		
-		
 		Pageable pageable = PageUtils.build(page, size);
 		Page<WorkFullView> result = this.workViewService.findWorkByUserId(uuid, isCurrentUser, pageable);
-		
 		
 		List<DataVo<WorkVo>> dataList = new ArrayList<>();
 		DataVo<WorkVo> dataVoWork;
 		for (WorkFullView workFullView : result) {
 			Long workId = workFullView.getId();
 			dataVoWork = DataVoHelper.getInstance(workId, "work", workFullView, new WorkVo());
-			//userRelationShipData
-			RelationshipVo<RelationshipDataVo> relationshipVo = RelationShipVoHelper.getInstance(uuid, "user");
-			Map<String, Object> relationship = new HashMap<>();
-			relationship.put("author", relationshipVo);
-			dataVoWork.setRelationships(relationship);
+			dataVoWork.setRelationships(RelationShipVoHelper.buildRelationships("author", uuid, "user"));
 			
 			dataList.add(dataVoWork);
 		}
@@ -139,14 +133,9 @@ public class UserController extends BaseController {
 			included.add(dataVoUser);
 		}
 		//构造meta
-		
 		Map<String, Object> workNum = this.workViewService.findWorkTotalbyUserId(uuid);
 		
-		RootVo root = JsonUtils.createRoot();
-		root.setData(dataList);
-		root.setIncluded(included);
-		root.setMeta(workNum);
-		
+		RootVo root = JsonUtils.createRoot(dataList, included, workNum);
 		return root;
 	}
 	

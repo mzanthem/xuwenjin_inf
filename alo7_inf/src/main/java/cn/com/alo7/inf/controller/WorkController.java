@@ -6,13 +6,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cn.com.alo7.inf.common.utils.DataVoHelper;
 import cn.com.alo7.inf.common.utils.JsonUtils;
+import cn.com.alo7.inf.common.utils.PageUtils;
+import cn.com.alo7.inf.common.utils.RelationShipVoHelper;
 import cn.com.alo7.inf.entity.Video;
 import cn.com.alo7.inf.entity.Work;
 import cn.com.alo7.inf.entity.WorkFullView;
@@ -66,7 +72,6 @@ public class WorkController extends BaseController {
 		return rootVo;
 	}
 	
-	
 	/**
 	 * TODO 日期转换问题
 	 * A19-获取一个作品的所有信息
@@ -89,10 +94,9 @@ public class WorkController extends BaseController {
 		// videoData
 		Video video = workFull.getVideo();
 		RelationshipDataVo relationshipVideo = new RelationshipDataVo(video.getId().toString(), "video");
-		// authorData
-		List<Map<String, Object>> userList = this.mockUserList();
-		Map<String, Object> user = userList.get(0);
-		RelationshipDataVo relationshipAuthor = new RelationshipDataVo(workFull.getUuid(), "user");
+		
+		String uuid = workFull.getUuid();
+		RelationshipDataVo relationshipAuthor = new RelationshipDataVo(uuid, "user");
 		
 		//构建data-relationships
 		Map<String, Object> relationships = new HashMap<>();
@@ -103,30 +107,69 @@ public class WorkController extends BaseController {
 		//构建included
 		List<DataVo<?>> includedList = new ArrayList<>();
 		DataVo<VideoVo> includeVideo = DataVoHelper.getInstance(video.getId(), "video", video, new VideoVo());
-		DataVo<Map<String, Object>> includeUser = DataVoHelper.getInstance(workFull.getUuid(), "user", user);
 		includedList.add(includeVideo);
+		//TODO 获取用户信息
+		Map<String, Object> user = getMockUserById(uuid);
+		DataVo<Map<String, Object>> includeUser = DataVoHelper.getInstance(uuid, "user", user);
 		includedList.add(includeUser);
 		
 		//构建rootVo
-		RootVo rootVo = JsonUtils.createRoot();
-		rootVo.setData(dataVoWork);
-		rootVo.setIncluded(includedList);
+		RootVo rootVo = JsonUtils.createRoot(dataVoWork, includedList);
 		return rootVo;
 	}
 	
-	
 	/**
-	 * 模拟作品作者
+	 * A16-查询作品排行榜
+	 * works/rank?type=type&page=page&size=size
 	 * @return
-	 */ 
-	private List<Map<String, Object>> mockUserList() {
+	 */
+	@ApiOperation(value = "A16", notes = "查询作品排行榜", httpMethod = "GET")
+	@RequestMapping(value = "works/rank", method = RequestMethod.GET)
+	public Object getWorkRank(@RequestParam(value = "type", required = true) String type,
+			@RequestParam(value = "page", required = false, defaultValue = PAGE) Integer page,
+			@RequestParam(value = "size", required = false, defaultValue = SIZE) Integer size) {
+		
+		checkType(type);
+		
+		Pageable pageable = PageUtils.build(page, size);
+		Page<WorkFullView> result = this.workViewService.findWorkRank(type, pageable);
+
+		List<DataVo<WorkVo>> dataList = new ArrayList<>();
+		DataVo<WorkVo> data;
+		
+		List<DataVo<?>> includeList = new ArrayList<>();
+		DataVo<?> includeUser;
+		for (WorkFullView view : result) {
+			data = DataVoHelper.getInstance(view.getId(), "work", view, new WorkVo());
+			
+			String uuid = view.getUuid();
+			data.setRelationships(RelationShipVoHelper.buildRelationships("author", uuid, "user"));
+			dataList.add(data);
+			
+			includeUser = DataVoHelper.getInstance(uuid, "user", this.getMockUserById(uuid)); //查询user信息
+			includeList.add(includeUser);
+		}
+		
+		RootVo rootVo = JsonUtils.createRoot(dataList, includeList);
+		return rootVo;
+	}
+	/**
+	 * 检查type参数
+	 */
+	private void checkType(String type) {
+		if (!"total".equals(type) && !"week".equals(type)) {
+			throw new RuntimeException("type[" + type + "] is not support");
+		}
+	}
+
+	
+	private Map<String, Object> getMockUserById(String uuid) {
 		Map<String, Object> map = new HashMap<>();
+		map.put("id", uuid);
 		map.put("avatarUrl", "图像Url");
 		map.put("name", "Gebhardt");
 		
-		List<Map<String, Object>> list = new ArrayList<>();
-		list.add(map);
-		return list;
-		
+		return map;
 	}
+	
 }

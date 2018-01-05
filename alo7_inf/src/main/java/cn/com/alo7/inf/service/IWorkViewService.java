@@ -27,9 +27,32 @@ public interface IWorkViewService {
 	Page<WorkFullView> findWorkByAlbumId(Long albumId, Pageable pageable);
 	
 	/**
+	 * 通过用户id查找作品
+	 * @param uuid
+	 * @param isCurrentUser 
+	 * @param pageable
+	 * @return
+	 */
+	Page<WorkFullView> findWorkByUserId(String uuid, boolean isCurrentUser, Pageable pageable);
+	/**
 	 * 根据专辑id查询视频总数&视频下作品总数
 	 * @param albumId
 	 * @return
 	 */
 	Map<String, Object> findWorkTotal(Long albumId);
+	
+	/**
+	 * 根据用户id查询视频总数&视频下作品总数
+	 * @param albumId
+	 * @return
+	 */
+	Map<String, Object> findWorkTotalbyUserId(String userId);
+	
+	/**
+	 * 查询用户作品排名
+	 * @param type
+	 * @param pageable
+	 * @return
+	 */
+	Page<WorkFullView> findWorkRank(String type, Pageable pageable);
 }

@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
+
 import cn.com.alo7.inf.common.Constant;
 import cn.com.alo7.inf.common.utils.PageUtils;
 import cn.com.alo7.inf.entity.AlbumFullView;
@@ -45,17 +47,24 @@ public class AlbumViewServiceImpl implements IAlbumViewService {
 		return albumViewRepository.findAll(ex, pageable);
 	}
 	
+	
 	/**
 	 * 根据类型查找专辑列表
 	 * @param pageable 1/2
-	 * @param type
+	 * @param specialType  1.一般专辑 2.特殊专辑
 	 * @return
 	 */
 	@Override
-	public Page<AlbumFullView> findByTypeWithPage(Pageable pageable, String type) {
+	public Page<AlbumFullView> findPageByTypeAndSpecialType(Pageable pageable, String type, String specialType) {
 		// 创建查询条件数据对象
 		AlbumFullView albumView = new AlbumFullView();
-		albumView.setType(type);
+	    if (!Strings.isNullOrEmpty(type)) {
+	    	albumView.setType(type);
+	    }
+	    if (!Strings.isNullOrEmpty(specialType)) {
+	    	albumView.setSpecialType(specialType);
+	    }
+		
 		// 创建匹配器
 		ExampleMatcher matcher = ExampleMatcher.matching();
 		Example<AlbumFullView> ex = Example.of(albumView, matcher);
@@ -74,7 +83,7 @@ public class AlbumViewServiceImpl implements IAlbumViewService {
 	 */
 	@Override
 	public AlbumFullView findSpecialAlbumByCode(String identifier) {
-		return albumFullViewRepository.findByTypeAndSpecialTypeCode(Constant.ALBUM_TYPE_SPECIAL, identifier);
+		return albumFullViewRepository.findByTypeAndSpecialTypeCode(Constant.ALBUM_SPECIAL_TYPE_SPECIAL, identifier);
 	}
 	
 	/**
@@ -83,5 +92,15 @@ public class AlbumViewServiceImpl implements IAlbumViewService {
 	@Override
 	public AlbumFullView findFullAlbumById(Long id) {
 		return albumFullViewRepository.findOne(id);
+	}
+	
+	/**
+	 * 查找上架专辑
+	 * @param id
+	 * @return
+	 */
+	@Override
+	public AlbumFullView findFullAlbumByIdAndStatus(Long id, String status) {
+		return this.albumFullViewRepository.findByIdAndStatus(id, status);
 	}
 }

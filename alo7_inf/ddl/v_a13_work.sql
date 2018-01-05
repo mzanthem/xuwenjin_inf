@@ -33,7 +33,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `v_a13_work` AS (
     where savr.delete_flag = '0'
       and savr.type = '2'    -- 类型：2为作品
 	  and sw.delete_flag = '0'
-	  and sw.status = 'released'
+	  -- and sw.status = 'released' -- 发布状态包含未发布（A15）
 	
 	LIMIT 0,999999999999 
 )

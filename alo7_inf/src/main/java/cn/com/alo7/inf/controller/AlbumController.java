@@ -2,8 +2,10 @@ package cn.com.alo7.inf.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import cn.com.alo7.inf.common.Constant;
 import cn.com.alo7.inf.common.utils.DataVoHelper;
 import cn.com.alo7.inf.common.utils.JsonUtils;
 import cn.com.alo7.inf.common.utils.PageUtils;
+import cn.com.alo7.inf.common.utils.RelationShipVoHelper;
 import cn.com.alo7.inf.entity.AlbumFullView;
 import cn.com.alo7.inf.entity.AlbumView;
 import cn.com.alo7.inf.entity.VideoFullView;
@@ -136,12 +139,11 @@ public class AlbumController extends BaseController {
 			@RequestParam(value = "albumSize", required = false, defaultValue = ALBUM_SIZE) Integer albumSize,
 			@RequestParam(value = "videoSize", required = false, defaultValue = VIDEO_SIZE) Integer videoSize,
 			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort) {
-		// TODO
 		//查找一般作品专辑
 		Pageable pageable = PageUtils.build(Constant.PAGE, albumSize);
-		Page<AlbumFullView> albumPageList = this.albumViewService.findByTypeWithPage(pageable, "1");
+		Page<AlbumFullView> albumPageList = this.albumViewService.findPageByTypeAndSpecialType(pageable, null, Constant.ALBUM_SPECIAL_TYPE_COMMON);
 		
-		List<DataVo<AlbumVo>> DataList = new ArrayList<>(); //data数组
+		List<DataVo<AlbumVo>> dataList = new ArrayList<>(); //data数组
 		List<Object> includedList = new ArrayList<>(); //include数组
 		
 		//为每一个专辑构造data
@@ -149,62 +151,50 @@ public class AlbumController extends BaseController {
 		for (AlbumFullView albumFullView : albumPageList) {
 			Long albumId = albumFullView.getId();
 			//封装dataList
-			// 构造album data
 			albumDataVo = DataVoHelper.getInstance(albumId, "album", albumFullView, new AlbumVo());
-			
-			
-			//?专辑下视频?
-//			Page<VideoVo> videoList;
 			
 			//专辑下作品
 			Pageable pageableWork = PageUtils.build(Constant.PAGE, Constant.SIZE, sort);
 			Page<WorkFullView> workVoList = this.workViewService.findWorkByAlbumId(albumId, pageableWork);
 			
 			//专辑下作品ship 初始化List<T>
-			RelationshipListVo<RelationshipDataVo> relationshipVoWork = new RelationshipListVo<>(true);
-			DataVo<WorkVo> included;
+			RelationshipListVo<RelationshipDataVo> relationshipListVoWork = new RelationshipListVo<>(true);
+			DataVo<WorkVo> includedWork;
 			
+			Set<String> userSet = new HashSet<>();
 			//album data 的relationShip
 			for (WorkFullView workFullView : workVoList) {
 				Long workId = workFullView.getId();
-				
 				// 构建relationships
-				relationshipVoWork.getData().add(new RelationshipDataVo(workId.toString(), "work"));
+				relationshipListVoWork.addData(new RelationshipDataVo(workId.toString(), "work"));
 				
 				// 构建included data
-				included = (DataVo<WorkVo>)DataVoHelper.getInstance(workId, "work", workFullView, new WorkVo());
-				// 构建relationshiop author信息
-				RelationshipVo<RelationshipDataVo> relationshipVoAuthor = new RelationshipVo<>(new RelationshipDataVo("1", "user"));
+				includedWork = DataVoHelper.getInstance(workId, "work", workFullView, new WorkVo());
 				//album下作者关联
-				Map<String, Object> relationships = new HashMap<String, Object>();
-				relationships.put("author", relationshipVoAuthor);
-				included.setRelationships(relationships);
-				
-				includedList.add(included);
+				String uuid = workFullView.getUuid();
+				includedWork.setRelationships(RelationShipVoHelper.buildRelationships("author", uuid, "user"));
+				includedList.add(includedWork);
+				//用户信息
+				userSet.add(uuid);
 			} //end for j
 			
-			//所有作者的信息 列表[模拟]
-			List<Map<String, Object>> list = this.mockUserList();
-			DataVo<Map<String, Object>> userInclude;
-			Long i = 0L;
+			//TODO 所有作者的信息 列表[模拟]
+			List<Map<String, Object>> list = this.mockUserList(userSet);
+			DataVo<Map<String, Object>> includedUser;
 			for (Map<String, Object> map : list) {
-				
-				userInclude = JsonUtils.setData((i++), "user", map);
-				includedList.add(userInclude);
+				includedUser = DataVoHelper.getInstance(map.get("id"), "user", map);
+				includedList.add(includedUser);
 			}
 			//album下work关联
-			Map<String, Object> relationships = new HashMap<String, Object>();
-			relationships.put("work", relationshipVoWork);
-			albumDataVo.setRelationships(relationships);
-			DataList.add(albumDataVo);
+			albumDataVo.setRelationships(RelationShipVoHelper.buildRelationships("work", relationshipListVoWork));
+			dataList.add(albumDataVo);
+			
 		} //end for i
 		
 		
 		// root
-		RootVo rootVo = JsonUtils.createRoot();
-		rootVo.setData(DataList);
+		RootVo rootVo = JsonUtils.createRoot(dataList, includedList);
 		
-		rootVo.setIncluded(includedList);
 		return rootVo;
 	}
 
@@ -220,14 +210,13 @@ public class AlbumController extends BaseController {
 	 * @return
 	 */
 	@ApiOperation(value = "A13", notes = "查询特殊作品专辑视频清单", httpMethod = "GET")
-//	@ApiImplicitParam(name = "type", value = "作品类型", required = true, paramType = "String", allowableValues = "special")
 	@RequestMapping(value = "albums/works2", params = "type=special", method = RequestMethod.GET)
 	public Object getSpecialAlbumWorkList(
 			@RequestParam(value = "type", required = true) String type,
 			@RequestParam(value = "identifier", required = true) String identifier,
 			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort,
 			@RequestParam(value = "page", required = false, defaultValue = PAGE) Integer page,
-			@RequestParam(value = "size", required = false) Integer size) {
+			@RequestParam(value = "size", required = false, defaultValue = SIZE) Integer size) {
 		//根据专辑code查找专辑 【唯一】
 		AlbumFullView albumFullView = this.albumViewService.findSpecialAlbumByCode(identifier);
 		if (null == albumFullView) {
@@ -236,63 +225,53 @@ public class AlbumController extends BaseController {
 		}
 		Long albumId = albumFullView.getId();
 		// 构造data
-		DataVo<AlbumVo> albumDataVo = DataVoHelper.getInstance(albumId, "album", albumFullView, new AlbumVo());
-				
-				
+		DataVo<AlbumVo> dataVoAlbum = DataVoHelper.getInstance(albumId, "album", albumFullView, new AlbumVo());
 		//翻页查询
 		Pageable pageable = PageUtils.build(page, size, sort);
-		Page<WorkFullView> workList = this.workViewService.findWorkByAlbumId(2L, pageable);
+		Page<WorkFullView> workList = this.workViewService.findWorkByAlbumId(albumId, pageable);
 		
+		//included 包含work 和user
 		List<Object> includedList = new ArrayList<>();
-		
-		RelationshipListVo<RelationshipDataVo> relationshipVoWork = new RelationshipListVo<>(true);
+		//work list
+		RelationshipListVo<RelationshipDataVo> relationshipListVoWork = new RelationshipListVo<>(true);
 		DataVo<WorkVo> included;
+		//作者信息
+		Set<String> userSet = new HashSet<>();
 		
 		for (WorkFullView workFullView : workList) {
 			Long workId = workFullView.getId();
 			
 			// 构建relationships
 			RelationshipDataVo relationshipDataVo = new RelationshipDataVo(workId.toString(), "work"); //id,type 最里层
-			relationshipVoWork.getData().add(relationshipDataVo);
+			relationshipListVoWork.addData(relationshipDataVo);
 			
 			// 构建included data
-			included = (DataVo<WorkVo>)DataVoHelper.getInstance(workId, "work", workFullView, new WorkVo());
-			// 构建relationshiop author信息
-			RelationshipDataVo relationshipDataVoAuthor = new RelationshipDataVo("1", "user"); //id,type 最里层
-			RelationshipVo<RelationshipDataVo> relationshipVoAuthor = new RelationshipVo<>(relationshipDataVoAuthor);
+			included = DataVoHelper.getInstance(workId, "work", workFullView, new WorkVo());
 			//album下作者关联
-			Map<String, Object> relationships = new HashMap<String, Object>();
-			relationships.put("author", relationshipVoAuthor);
-			included.setRelationships(relationships);
+			String uuid = workFullView.getUuid();
 			
+			included.setRelationships(RelationShipVoHelper.buildRelationships("author", uuid, "user"));
 			includedList.add(included);
 			
+			userSet.add(uuid);
+			//根据uuid查找用户信息
 		}
-		
-		
-		//所有作者的信息 列表[模拟]
-		List<Map<String, Object>> list = this.mockUserList();
+		//album下work关联
+		dataVoAlbum.setRelationships(RelationShipVoHelper.buildRelationships("work", relationshipListVoWork));
+				
+		//TODO 根据作品的作者所有作者的信息 列表[模拟]
+		List<Map<String, Object>> list = this.mockUserList(userSet);
 		DataVo<Map<String, Object>> userInclude;
 		for (Map<String, Object> map : list) {
-			userInclude = JsonUtils.setData("1", "user", map);
+			userInclude = DataVoHelper.getInstance(map.get("id"), "user", map);
 			includedList.add(userInclude);
 		}
 		
-		//album下work关联
-		Map<String, Object> relationships = new HashMap<String, Object>();
-		relationships.put("work", relationshipVoWork);
-		albumDataVo.setRelationships(relationships);
 		
-		
-		// root
-		RootVo rootVo = JsonUtils.createRoot();
-		rootVo.setData(albumDataVo);
-		
-		rootVo.setIncluded(includedList);
 		// mata [显示所有的作品]
 		Map<String, Object> meta =  this.workViewService.findWorkTotal(albumFullView.getId());
 		
-		rootVo.setMeta(meta);
+		RootVo rootVo = JsonUtils.createRoot(dataVoAlbum, includedList, meta);
 		
 		return rootVo;
 	}
@@ -318,52 +297,40 @@ public class AlbumController extends BaseController {
 			@RequestParam(value = "size", required = false, defaultValue = SIZE) Integer size,
 			@RequestParam(value = "sort", required = false, defaultValue = SORT_MANUAL) String sort) {
 		// 根据id查找专辑
-		AlbumFullView albumFullView = this.albumViewService.findFullAlbumById(Long.valueOf(albumId));
+		AlbumFullView albumFullView = this.albumViewService.findFullAlbumByIdAndStatus(Long.valueOf(albumId), Constant.STATUS_UP);
 		if (null == albumFullView) {
 			System.out.println("album is null");
 			return null; // 返回空的结果
 		}
-		
-		
 		// 构造data
-		AlbumVo albumVo = new AlbumVo();
-		BeanUtils.copyProperties(albumFullView, albumVo);
-		DataVo<AlbumVo> albumDataVo = JsonUtils.setData(albumVo.getId(), "album", albumVo);
+		DataVo<AlbumVo> dataVoAlbum = DataVoHelper.getInstance(albumFullView.getId(), "album", albumFullView, new AlbumVo());
 		
 		Pageable pageable = PageUtils.build(page, size, sort);
 		Page<VideoFullView> videoViewPage = this.videoViewService
 				.findFullByAlbumIdAndQueryWithPage(Long.valueOf(albumId), pageable);
 		
+		// data-relationShip list
 		RelationshipListVo<RelationshipDataVo> relationshipListVo = new RelationshipListVo<>(true);
+		
 		List<DataVo<VideoVo>> includedList = new ArrayList<>();
 		DataVo<VideoVo> included;
 		
 		for (VideoFullView videoFullView : videoViewPage) {
 			// 构建relationships
 			RelationshipDataVo relationshipDataVo = new RelationshipDataVo(videoFullView.getId().toString(), "video"); //id,type 最里层
-			relationshipListVo.getData().add(relationshipDataVo);
+			relationshipListVo.addData(relationshipDataVo);
 			
 			// 构建included
-			VideoVo videoVo = new VideoVo();
-			BeanUtils.copyProperties(videoFullView, videoVo);
-			included = (DataVo<VideoVo>) JsonUtils.setData(videoFullView.getId(), "video", videoVo);
+			included = DataVoHelper.getInstance(videoFullView.getId(), "video", videoFullView, new VideoVo());
 			includedList.add(included);
-			
 		}
-		Map<String, Object> relationships = new HashMap<String, Object>();
-		relationships.put("video", relationshipListVo);
-		albumDataVo.setRelationships(relationships);
 		
+		dataVoAlbum.setRelationships(RelationShipVoHelper.buildRelationships("video", relationshipListVo));
 		
-		// root
-		RootVo rootVo = JsonUtils.createRoot();
-		rootVo.setData(albumDataVo);
-		
-		rootVo.setIncluded(includedList);
 		// mata [显示所有的]
 		Map<String, Object> meta =  this.videoViewService.findVideoAndWorkTotal(albumFullView.getId());
 		
-		rootVo.setMeta(meta);
+		RootVo rootVo = JsonUtils.createRoot(dataVoAlbum, includedList, meta);
 		return rootVo;
 	}
 
@@ -371,15 +338,23 @@ public class AlbumController extends BaseController {
 	 * 模拟作品作者
 	 * @return
 	 */
-	private List<Map<String, Object>> mockUserList() {
+	private List<Map<String, Object>> mockUserList(Set<String> userSet) {
+		
+		List<Map<String, Object>> list = new ArrayList<>(userSet.size());
+		for (String uuid : userSet) {
+			list.add(mockUser(uuid));
+		}
+		return list;
+	}
+	/**
+	 * 模拟作品作者
+	 * @return
+	 */
+	private Map<String, Object> mockUser(String uuid) {
 		Map<String, Object> map = new HashMap<>();
+		map.put("id", uuid);
 		map.put("avatarUrl", "图像Url");
 		map.put("name", "Gebhardt");
-		
-		List<Map<String, Object>> list = new ArrayList<>();
-		list.add(map);
-		return list;
-		
+		return map;
 	}
-
 }
